@@ -508,7 +508,7 @@ git add -A && git commit -m "feat: global nav + footer layout"
 
 **Files:**
 - Create: `scripts/bible-spike.ts`
-- Modify: `package.json` (add `"spike": "node --env-file=.env.local scripts/bible-spike.ts"`)
+- Modify: `package.json` (add `"spike": "tsx --env-file-if-exists=.env.local scripts/bible-spike.ts"` — `tsx` resolves the `@/*` alias; `-if-exists` avoids a hard failure when `.env.local` is absent so the script's own key check surfaces)
 - Create: `.env.local.example` (documents `BIBLE_IS_API_KEY=`)
 
 **Interfaces:**
