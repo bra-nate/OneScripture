@@ -218,7 +218,7 @@ git add -A && git commit -m "feat: auth validation helpers (TDD)"
 
 **Files:**
 - Create: `src/lib/supabase/middleware.ts`
-- Create: `middleware.ts` (repo root)
+- Create: `src/proxy.ts` — **Next 16 convention.** `middleware.ts` is deprecated in favor of `proxy.ts` (exporting a `proxy` function), and in a `--src-dir` project it MUST live at `src/proxy.ts` (sibling of `app/`), not the repo root. Placing it at the root or naming it `middleware.ts` silently no-ops. Middleware/proxy changes require a dev-server restart (not HMR).
 
 **Interfaces:**
 - Consumes: `isProtectedPath` (Task 2).
@@ -267,13 +267,13 @@ export async function updateSession(request: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Write root `middleware.ts`**
+- [ ] **Step 2: Write `src/proxy.ts`** (Next 16 convention; see Files note)
 
 ```ts
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-export async function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return updateSession(request);
 }
 
