@@ -18,6 +18,7 @@
 /artifacts/kokoro-phase0/
 __pycache__/
 /infra/phase1/phase1-inputs.env
+/supabase/.temp/
 
 # next.js
 /.next/

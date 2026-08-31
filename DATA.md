@@ -1,5 +1,11 @@
 # DATA.md — OneScripture
 
+> **Legacy v1 reference:** This document describes the earlier Bible.is and
+> download-oriented data model. For the active Kokoro rebuild, use `PHASE.md`,
+> `docs/superpowers/plans/2026-08-30-self-hosted-kokoro-verse-audio-mvp.md`, and
+> the numbered migrations in `supabase/migrations/`. Do not extend the Bible.is
+> contracts below for new Phase 2+ work.
+
 ## Overview
 
 This document defines the database schema, API data contracts, and data flow for OneScripture v1.

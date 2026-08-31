@@ -2,10 +2,20 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { signIn, signUp } from "@/app/(auth)/actions";
 
-export function AuthForm({ mode }: { mode: "signup" | "login" }) {
-  const [error, setError] = useState<string | null>(null);
+import { signIn, signUp } from "@/app/(auth)/actions";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
+
+export interface AuthFormProps {
+  mode: "signup" | "login";
+  initialError?: string;
+}
+
+export function AuthForm({
+  mode,
+  initialError,
+}: AuthFormProps) {
+  const [error, setError] = useState<string | null>(initialError ?? null);
   const [checkEmail, setCheckEmail] = useState(false);
   const [pending, start] = useTransition();
 
@@ -38,20 +48,28 @@ export function AuthForm({ mode }: { mode: "signup" | "login" }) {
   return (
     <form action={onSubmit} className="flex flex-col gap-4">
       <input
+        aria-label="Email"
         name="email"
         type="email"
         placeholder="Email"
         autoComplete="email"
+        required
         className={inputClass}
       />
       <input
+        aria-label="Password"
         name="password"
         type="password"
         placeholder="Password"
         autoComplete={mode === "signup" ? "new-password" : "current-password"}
+        required
         className={inputClass}
       />
-      {error && <p className="font-sans text-sm text-red-400">{error}</p>}
+      {error && (
+        <p aria-live="polite" className="font-sans text-sm text-red-400">
+          {error}
+        </p>
+      )}
       <button
         type="submit"
         disabled={pending}
@@ -59,14 +77,7 @@ export function AuthForm({ mode }: { mode: "signup" | "login" }) {
       >
         {mode === "signup" ? "Create Account" : "Sign In"}
       </button>
-      <button
-        type="button"
-        disabled
-        title="Google sign-in coming soon"
-        className="cursor-not-allowed rounded-md border border-border px-4 py-2 font-sans text-sm text-text-muted"
-      >
-        Continue with Google (coming soon)
-      </button>
+      <OAuthButtons />
       <p className="text-center font-sans text-sm text-text-muted">
         {mode === "signup" ? (
           <>

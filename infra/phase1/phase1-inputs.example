@@ -1,13 +1,5 @@
-# Copy this file to phase1-inputs.env and fill in non-secret deployment inputs.
-# Never put passwords, API keys, private keys, or SMTP credentials in this file.
-
-VPS_HOST=
-VPS_SSH_USER=
-APP_DOMAIN=
-SUPABASE_DOMAIN=
-TLS_EMAIL=
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_USER=
-SMTP_FROM=
-BACKUP_TARGET=
+# Superseded for the current MVP.
+#
+# Phase 1 uses the resumed hosted Supabase project configured through the
+# ignored .env.local file. Do not copy this file or start a local Supabase
+# stack. See docs/superpowers/phase1/hosted-platform-runbook.md.

@@ -2,7 +2,6 @@
 set -uo pipefail
 
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-input_file="${PHASE1_INPUT_FILE:-$project_root/infra/phase1/phase1-inputs.env}"
 blocked=0
 
 pass() {
@@ -18,38 +17,15 @@ block() {
   blocked=1
 }
 
-has_input() {
-  local key="$1"
-  [[ -f "$input_file" ]] && grep -Eq "^${key}=.+" "$input_file"
-}
+printf 'OneScripture hosted Supabase Phase 1 readiness\n'
 
-printf 'OneScripture Phase 1 readiness\n'
-
-for command_name in git docker openssl ssh; do
+for command_name in git node; do
   if command -v "$command_name" >/dev/null 2>&1; then
     pass "$command_name is installed"
   else
     block "$command_name is required"
   fi
 done
-
-if docker compose version >/dev/null 2>&1; then
-  pass "Docker Compose is installed"
-else
-  block "Docker Compose is required"
-fi
-
-if docker info >/dev/null 2>&1; then
-  pass "Docker daemon is running"
-else
-  warn "Docker daemon is not running; local stack validation is unavailable"
-fi
-
-if git -C "$project_root" remote get-url origin >/dev/null 2>&1; then
-  pass "Git origin is configured"
-else
-  block "Git origin is not configured"
-fi
 
 if [[ -f "$project_root/supabase/migrations/0001_init.sql" ]]; then
   pass "Initial Supabase migration is present"
@@ -69,21 +45,42 @@ else
   warn ".env.local is absent"
 fi
 
-if [[ ! -f "$input_file" ]]; then
-  block "copy infra/phase1/phase1-inputs.example to phase1-inputs.env"
-else
-  for key in VPS_HOST VPS_SSH_USER APP_DOMAIN SUPABASE_DOMAIN TLS_EMAIL SMTP_HOST SMTP_PORT SMTP_USER SMTP_FROM BACKUP_TARGET; do
-    if has_input "$key"; then
-      pass "$key is supplied"
-    else
-      block "$key is missing from phase1-inputs.env"
-    fi
-  done
-fi
-
 if (( blocked )); then
-  printf '\nPhase 1 is not ready for remote deployment.\n'
+  printf '\nPhase 1 local configuration is incomplete.\n'
   exit 1
 fi
 
-printf '\nPhase 1 deployment inputs are ready.\n'
+set -a
+# shellcheck disable=SC1091
+source "$project_root/.env.local"
+set +a
+
+if node <<'NODE'
+const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+async function check(label, path) {
+  try {
+    const response = await fetch(base + path, {
+      headers: { apikey: key },
+    });
+    console.log(`[${response.ok ? 'pass' : 'block'}] ${label} returned HTTP ${response.status}`);
+    return response.ok;
+  } catch (error) {
+    console.log(`[block] ${label} is unreachable: ${error instanceof Error ? error.message : 'request failed'}`);
+    return false;
+  }
+}
+
+const results = await Promise.all([
+  check('Supabase Auth', '/auth/v1/health'),
+  check('Supabase REST', '/rest/v1/profiles?select=id&limit=0'),
+]);
+process.exit(results.every(Boolean) ? 0 : 1);
+NODE
+then
+  printf '\nPhase 1 hosted Supabase configuration is ready.\n'
+else
+  printf '\nPhase 1 hosted Supabase services are not ready.\n'
+  exit 1
+fi

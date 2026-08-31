@@ -1,107 +1,98 @@
-# PHASE.md — OneScripture
+# PHASE.md — OneScripture Kokoro MVP
 
-## Build Philosophy
+## Source of truth
 
-OneScripture is built in phases. Each phase must be production-ready before the next begins. No phase is a throwaway — every screen and component built in Phase 1 carries forward.
+The active rebuild plan is
+[`docs/superpowers/plans/2026-08-30-self-hosted-kokoro-verse-audio-mvp.md`](docs/superpowers/plans/2026-08-30-self-hosted-kokoro-verse-audio-mvp.md).
+It supersedes the earlier Bible.is/download-oriented Phase 1 roadmap.
 
-Claude Code sessions follow this file. The active phase is always noted at the top of CLAUDE.md.
+The MVP uses the existing hosted Supabase project. Self-hosted Supabase remains
+a future migration option and must not be started without a separate decision.
 
----
+## Phase 0 — Rights and technical proof (Complete)
 
-## Phase 1 — Core Experience (Active)
+- [x] Approve the World English Bible (`engwebp`) source and rights.
+- [x] Pin Kokoro-82M and the `af_heart` and `am_michael` voices.
+- [x] Generate, measure, validate, and listen to the required proof samples.
+- [x] Record the accepted MP3 settings and source hashes.
 
-**Goal:** A working, beautiful web app where any user can find a Bible passage, play it, and download it. Playlist creation is available to signed-in users.
+Evidence:
+[`docs/superpowers/phase0/kokoro-rights-and-proof.md`](docs/superpowers/phase0/kokoro-rights-and-proof.md)
 
-**Deliverables:**
+## Phase 1 — Hosted Supabase platform (Complete for development)
 
-### Infrastructure
-- [ ] Next.js 14 project scaffolded with TypeScript and Tailwind CSS
-- [ ] Supabase project created (auth + database)
-- [ ] Bible.is API key obtained and environment variables configured
-- [ ] Vercel deployment connected to GitHub repo
-- [ ] `ADS_ENABLED` feature flag in app config (default: false)
+- [x] Resume and verify the existing hosted Supabase project.
+- [x] Apply the auth and persistence schema.
+- [x] Verify signup, login, logout, profile creation, protected routes, and RLS.
+- [x] Keep project credentials in ignored environment files.
 
-### Auth
-- [ ] Supabase Auth configured (email/password + Google OAuth)
-- [ ] Sign Up screen (S07)
-- [ ] Log In screen (S08)
-- [ ] Auth state managed globally (session persistence)
-- [ ] Protected route wrapper for authenticated screens
+Release gates still tracked separately:
 
-### Bible.is Integration
-- [ ] DBP4 API client set up (typed fetch wrapper)
-- [ ] Bible/translation list fetched and cached
-- [ ] Book list endpoint integrated
-- [ ] Chapter list endpoint integrated
-- [ ] Passage/verse audio URL endpoint integrated
-- [ ] Confirm availability: KJV, NIV, ESV, Twi, Ga DAM IDs
+- [ ] Configure production site and redirect URLs.
+- [ ] Verify production confirmation and recovery email delivery.
+- [ ] Repeat auth and protected-route checks on the production origin.
+- [ ] Document the hosted backup/PITR and recovery procedure before accepting
+      production data.
 
-### Core Screens
-- [ ] S01 — Homepage / Landing
-- [ ] S02 — Search Results
-- [ ] S03 — Passage View with inline audio player
-- [ ] S04 — Browse: Book List
-- [ ] S05 — Browse: Chapter List
-- [ ] S06 — Download Interstitial (v1 — no ads)
+Evidence:
+[`docs/superpowers/phase1/hosted-platform-runbook.md`](docs/superpowers/phase1/hosted-platform-runbook.md)
 
-### Authenticated Screens
-- [ ] S09 — Dashboard
-- [ ] S10 — Playlist Builder
-- [ ] S11 — Playlist View
-- [ ] S12 — Download History
-- [ ] S13 — Saved Favourites
-- [ ] S14 — Settings
+## Phase 2 — Scripture catalogue (Complete)
 
-### Database Schema
-- [ ] `users` (managed by Supabase Auth)
-- [ ] `playlists` (id, user_id, name, created_at)
-- [ ] `playlist_items` (id, playlist_id, book, chapter, verse_start, verse_end, translation, order)
-- [ ] `downloads` (id, user_id, passage_ref, translation, downloaded_at)
-- [ ] `favourites` (id, user_id, passage_ref, translation, created_at)
+- [x] Add scripture translation and canonical verse migrations.
+- [x] Add capability fields, public-read RLS, and service-only writes.
+- [x] Pin and validate the official WEB source artifact.
+- [x] Compute deterministic verse text hashes.
+- [x] Add reference validation and selection-normalization tests.
+- [x] Render canonical scripture text on the passage page.
+- [x] Apply `0002_scripture_catalogue.sql` to hosted Supabase.
+- [x] Import and verify all 31,103 WEB verse records.
+- [x] Verify public reads and denied anonymous/authenticated writes.
+- [x] Verify real chapter, single-verse, range, multi-reference, missing-passage,
+      and invalid-reference behavior against hosted Supabase.
+- [x] Exercise search → passage rendering in the browser.
 
-### Ad Slot Infrastructure
-- [ ] `AdSlot` component built (renders nothing when `ADS_ENABLED=false`)
-- [ ] Slots placed in layout: homepage hero, player sidebar, download interstitial, footer
+Phase 2 is complete when all supported references resolve to canonical ordered
+verse records and invalid references are rejected against the deployed
+catalogue.
 
-### Design
-- [ ] Design tokens defined (colors, typography, spacing) in Tailwind config
-- [ ] Global layout and navigation component
-- [ ] Dark theme applied site-wide
-- [ ] Audio player styled (custom, not browser default)
-- [ ] Responsive layout (desktop-first, mobile-functional)
+Evidence:
+[`docs/superpowers/phase2/scripture-catalogue-runbook.md`](docs/superpowers/phase2/scripture-catalogue-runbook.md)
 
-**Phase 1 Complete When:**
-- A user can land, search, play, and download a passage without signing in
-- A signed-in user can create a playlist and download it
-- App is deployed on Vercel at production URL
-- All four translation groups return audio successfully
+## Remaining MVP phases
 
----
+### Phase 3 — Audio catalogue and storage (Active next)
 
-## Phase 2 — Growth & Monetisation
+Asset, job, selection, and selection-item tables; private storage; signed URLs;
+HTTP range requests; typed server-side storage services.
 
-**Goal:** Activate ad infrastructure, expand language coverage, improve shareability and discovery.
+- [ ] Add audio asset, generation job, selection, and selection-item migrations.
+- [ ] Add constraints, indexes, status validation, grants, and RLS.
+- [ ] Create the private `scripture-audio` storage bucket.
+- [ ] Verify upload, signed playback URLs, and HTTP range requests.
+- [ ] Add typed server-only asset and storage services.
 
-**Deliverables:**
-- [ ] Ad slot activation (`ADS_ENABLED=true`)
-- [ ] Advertiser-facing booking/inquiry page
-- [ ] Sponsored "Scripture of the Day" feature on homepage
-- [ ] Download interstitial with timed ad display
-- [ ] Shareable scripture link (unique URL per passage + translation)
-- [ ] Open Graph preview for shared links (passage text + app branding)
-- [ ] Additional African language coverage (Ewe, Hausa, Yoruba)
-- [ ] PWA manifest for mobile home screen installation
-- [ ] Analytics integration (page views, play events, downloads, language usage)
+### Phase 4 — Kokoro worker
 
----
+Durable job claiming, verse generation, MP3 conversion, upload, retry, recovery,
+logging, and resource limits.
 
-## Phase 3 — Platform Expansion
+### Phase 5 — Selection API
 
-**Goal:** Deepen engagement, explore revenue beyond ads.
+Selection creation/status/retry routes, limits, rate limiting, asset reuse, and
+deterministic readiness responses.
 
-**Deliverables:**
-- [ ] Daily scripture email/notification (opt-in)
-- [ ] Curated scripture collections ("Peace", "Faith", "Healing") — staff picks
-- [ ] Ministry/church partner programme (verified badge, featured placement)
-- [ ] Premium plan (no ads, extended download history, priority support)
-- [ ] Native mobile app evaluation (React Native / Expo)
+### Phase 6 — Vibrant design-system foundation
+
+Route themes, shared primitives, static grain, accessible foregrounds, and
+responsive shared chrome.
+
+### Phase 7 — Playback MVP
+
+Ordered verse playback, preparation states, looping, voice/speed/volume controls,
+preference persistence, preloading, and responsive behavior.
+
+### Phase 8 — Legacy removal and release safety
+
+Remove Bible.is and arbitrary-download behavior from the product flow, update
+copy, add operational monitoring, and run recovery and accessibility checks.

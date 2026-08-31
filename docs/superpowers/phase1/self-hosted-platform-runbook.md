@@ -1,7 +1,12 @@
-# Phase 1 — Self-hosted platform runbook
+# Phase 1 — Superseded self-hosted platform runbook
 
 **Started:** 2026-08-31
-**Status:** Deployment preparation in progress; remote inputs pending
+**Status:** Superseded for the MVP on 2026-08-31
+
+> Do not execute this runbook for the current MVP. The existing hosted Supabase
+> project was resumed and is the approved Phase 1 platform. In particular, do
+> not start a local Supabase Docker stack. Use
+> [`hosted-platform-runbook.md`](./hosted-platform-runbook.md) instead.
 
 ## Fixed decisions
 
