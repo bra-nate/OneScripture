@@ -59,23 +59,35 @@ catalogue.
 Evidence:
 [`docs/superpowers/phase2/scripture-catalogue-runbook.md`](docs/superpowers/phase2/scripture-catalogue-runbook.md)
 
-## Remaining MVP phases
-
-### Phase 3 — Audio catalogue and storage (Active next)
+## Phase 3 — Audio catalogue and storage (Complete)
 
 Asset, job, selection, and selection-item tables; private storage; signed URLs;
 HTTP range requests; typed server-side storage services.
 
-- [ ] Add audio asset, generation job, selection, and selection-item migrations.
-- [ ] Add constraints, indexes, status validation, grants, and RLS.
-- [ ] Create the private `scripture-audio` storage bucket.
-- [ ] Verify upload, signed playback URLs, and HTTP range requests.
-- [ ] Add typed server-only asset and storage services.
+- [x] Add audio asset, generation job, selection, and selection-item migrations.
+- [x] Add constraints, indexes, status validation, grants, and RLS.
+- [x] Create the private `scripture-audio` storage bucket.
+- [x] Verify upload, signed playback URLs, and HTTP range requests.
+- [x] Add typed server-only asset and storage services.
 
-### Phase 4 — Kokoro worker
+Evidence:
+[`docs/superpowers/phase3/audio-catalogue-storage-runbook.md`](docs/superpowers/phase3/audio-catalogue-storage-runbook.md)
+
+## Remaining MVP phases
+
+### Phase 4 — Kokoro worker (Active next)
 
 Durable job claiming, verse generation, MP3 conversion, upload, retry, recovery,
 logging, and resource limits.
+
+- [ ] Containerize the Python worker and pin its runtime dependencies.
+- [ ] Load the pinned Kokoro model and voice once per worker process.
+- [ ] Implement atomic job claiming and idempotent asset generation.
+- [ ] Validate output, convert to accepted MP3 settings, upload, and mark ready.
+- [ ] Add bounded retries, abandoned-job recovery, structured logs, and resource
+      limits.
+- [ ] Verify one enqueued verse produces exactly one reusable ready asset and
+      recovers safely from worker failure.
 
 ### Phase 5 — Selection API
 

@@ -13,7 +13,8 @@
     "kokoro:proof": "bash scripts/kokoro-phase0.sh",
     "kokoro:proof:male": "bash scripts/kokoro-phase0.sh --voice am_michael --output-dir artifacts/kokoro-phase0/am_michael",
     "scripture:import:web": "tsx --env-file-if-exists=.env.local scripts/import-web-catalogue.ts",
-    "scripture:verify": "tsx --env-file-if-exists=.env.local scripts/verify-scripture-catalogue.ts"
+    "scripture:verify": "tsx --env-file-if-exists=.env.local scripts/verify-scripture-catalogue.ts",
+    "audio:verify-storage": "tsx --env-file-if-exists=.env.local scripts/verify-audio-storage.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

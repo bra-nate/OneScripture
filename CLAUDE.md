@@ -1,7 +1,7 @@
 # CLAUDE.md — OneScripture
 
 ## Active Phase
-**Kokoro MVP Phase 3 — Audio Catalogue and Storage**
+**Kokoro MVP Phase 4 — Kokoro Worker**
 See PHASE.md for full checklist.
 
 ---
