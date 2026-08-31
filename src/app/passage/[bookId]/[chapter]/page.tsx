@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+import { VerseList } from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
+import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
-import { AudioPlayer } from "@/components/player/AudioPlayer";
-import { audioFilename, resolveChapterAudio } from "@/lib/bible/audio";
 import { formatDisplayRef, getBook, type PassageRef } from "@/lib/bible/reference";
-import { getTranslation, TRANSLATIONS } from "@/lib/bible/translations";
+import { getCanonicalPassage } from "@/lib/scripture/catalogue";
+import { ScriptureError } from "@/lib/scripture/errors";
+import { type CanonicalPassage } from "@/lib/scripture/types";
 
 export default async function PassagePage({
   params,
@@ -19,31 +22,28 @@ export default async function PassagePage({
     notFound();
   }
 
-  const ref: PassageRef = {
+  const reference: PassageRef = {
     bookId: book.id,
     chapter,
-    verseStart:
-      typeof query.verseStart === "string" ? Number(query.verseStart) : null,
-    verseEnd: typeof query.verseEnd === "string" ? Number(query.verseEnd) : null,
+    verseStart: parsePassageQueryNumber(query.verseStart),
+    verseEnd: parsePassageQueryNumber(query.verseEnd),
   };
-  const translation = getTranslation(
-    typeof query.translation === "string" ? query.translation : undefined,
-  );
+  const displayReference = formatDisplayRef(reference, "WEB");
+  let passage: CanonicalPassage | null = null;
+  let catalogueError: string | null = null;
 
-  let resolved:
-    | Awaited<ReturnType<typeof resolveChapterAudio>>
-    | { error: string };
   try {
-    resolved = await resolveChapterAudio(ref, translation.id);
+    passage = await getCanonicalPassage(reference);
   } catch (error) {
-    resolved = { error: (error as Error).message };
+    if (
+      error instanceof ScriptureError &&
+      (error.code === "invalid_reference" || error.code === "passage_not_found")
+    ) {
+      notFound();
+    }
+    catalogueError =
+      "The canonical scripture catalogue is still being prepared. Please try again shortly.";
   }
-
-  const displayRef =
-    "error" in resolved
-      ? formatDisplayRef(ref, translation.id.replace(/^ENG/, ""))
-      : resolved.displayRef;
-  const playerHref = `/passage/${book.id}/${chapter}`;
 
   return (
     <section className="mx-auto grid w-full max-w-6xl flex-1 gap-8 px-6 py-12 lg:grid-cols-[1fr_18rem]">
@@ -54,82 +54,49 @@ export default async function PassagePage({
         >
           Back to {book.name}
         </Link>
-        <div className="mt-6">
+
+        <header className="mt-6">
           <p className="font-sans text-sm uppercase tracking-[0.2em] text-accent">
-            Now playing
+            World English Bible
           </p>
           <h1 className="mt-3 font-display text-5xl text-text-primary">
-            {displayRef}
+            {displayReference}
           </h1>
           <p className="mt-4 max-w-2xl font-sans leading-7 text-text-muted">
-            Full chapter audio streams directly from Bible.is. Verse-specific
-            downloads use the same chapter audio until verse-level slicing is
-            added.
+            Canonical public-domain text from eBible.org, preserved verse by
+            verse for reusable narration and ordered playback.
           </p>
-        </div>
-
-        <form action={playerHref} className="mt-8 flex max-w-xs flex-col gap-2">
-          <label
-            htmlFor="translation"
-            className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-text-muted"
-          >
-            Translation
-          </label>
-          <select
-            id="translation"
-            name="translation"
-            defaultValue={translation.id}
-            className="min-h-11 rounded-md border border-border bg-surface px-3 font-sans text-sm text-text-primary outline-none focus:border-accent"
-          >
-            {TRANSLATIONS.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.id.replace(/^ENG/, "")}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="rounded-md border border-border px-4 py-2 font-sans text-sm font-semibold text-accent transition-colors hover:border-accent"
-          >
-            Load audio
-          </button>
-        </form>
+        </header>
 
         <div className="mt-8">
-          {"error" in resolved ? (
-            <div className="rounded-lg border border-border bg-surface p-5">
+          {catalogueError ? (
+            <div
+              role="status"
+              className="rounded-lg border border-border bg-surface p-5"
+            >
               <h2 className="font-sans text-lg font-semibold text-text-primary">
-                Audio unavailable
+                Scripture text unavailable
               </h2>
               <p className="mt-2 font-sans text-sm leading-6 text-text-muted">
-                {resolved.error}
+                {catalogueError}
               </p>
             </div>
           ) : (
-            <>
-              <AudioPlayer src={resolved.audioUrl} />
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link
-                  href={`/download?audioUrl=${encodeURIComponent(
-                    resolved.audioUrl,
-                  )}&filename=${encodeURIComponent(
-                    audioFilename(resolved.displayRef),
-                  )}&displayRef=${encodeURIComponent(resolved.displayRef)}`}
-                  className="rounded-md bg-accent px-5 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-background transition-colors hover:bg-accent-light"
-                >
-                  Download MP3
-                </Link>
-                <Link
-                  href="/login"
-                  className="rounded-md border border-border px-5 py-3 font-sans text-sm font-semibold text-text-muted transition-colors hover:border-accent hover:text-accent"
-                >
-                  Sign in to save
-                </Link>
-              </div>
-            </>
+            passage && <VerseList verses={passage.verses} />
           )}
         </div>
+
+        <div className="mt-8 rounded-lg border border-border bg-surface p-5">
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+            Audio preparation
+          </p>
+          <p className="mt-2 font-sans text-sm leading-6 text-text-muted">
+            Self-hosted verse narration will connect to this canonical text in
+            the audio-catalogue phase. No third-party audio is used here.
+          </p>
+        </div>
       </div>
+
       <aside>
         <AdSlot slotId="player-sidebar" />
       </aside>
