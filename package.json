@@ -9,7 +9,9 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "spike": "tsx --env-file-if-exists=.env.local scripts/bible-spike.ts"
+    "spike": "tsx --env-file-if-exists=.env.local scripts/bible-spike.ts",
+    "kokoro:proof": "bash scripts/kokoro-phase0.sh",
+    "kokoro:proof:male": "bash scripts/kokoro-phase0.sh --voice am_michael --output-dir artifacts/kokoro-phase0/am_michael"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

@@ -13,6 +13,11 @@
 # testing
 /coverage
 
+# local Kokoro proof dependencies, model cache, and generated audio
+/.cache/
+/artifacts/kokoro-phase0/
+__pycache__/
+
 # next.js
 /.next/
 /out/
