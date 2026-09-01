@@ -19,6 +19,7 @@
 __pycache__/
 /infra/phase1/phase1-inputs.env
 /supabase/.temp/
+/worker/worker.env
 
 # next.js
 /.next/

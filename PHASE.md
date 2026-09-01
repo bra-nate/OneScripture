@@ -73,21 +73,24 @@ HTTP range requests; typed server-side storage services.
 Evidence:
 [`docs/superpowers/phase3/audio-catalogue-storage-runbook.md`](docs/superpowers/phase3/audio-catalogue-storage-runbook.md)
 
-## Remaining MVP phases
-
-### Phase 4 — Kokoro worker (Active next)
+## Phase 4 — Kokoro worker (Complete)
 
 Durable job claiming, verse generation, MP3 conversion, upload, retry, recovery,
 logging, and resource limits.
 
-- [ ] Containerize the Python worker and pin its runtime dependencies.
-- [ ] Load the pinned Kokoro model and voice once per worker process.
-- [ ] Implement atomic job claiming and idempotent asset generation.
-- [ ] Validate output, convert to accepted MP3 settings, upload, and mark ready.
-- [ ] Add bounded retries, abandoned-job recovery, structured logs, and resource
+- [x] Containerize the Python worker and pin its runtime dependencies.
+- [x] Load the pinned Kokoro model and voice once per worker process.
+- [x] Implement atomic job claiming and idempotent asset generation.
+- [x] Validate output, convert to accepted MP3 settings, upload, and mark ready.
+- [x] Add bounded retries, abandoned-job recovery, structured logs, and resource
       limits.
-- [ ] Verify one enqueued verse produces exactly one reusable ready asset and
+- [x] Verify one enqueued verse produces exactly one reusable ready asset and
       recovers safely from worker failure.
+
+Evidence:
+[`docs/superpowers/phase4/worker-foundation.md`](docs/superpowers/phase4/worker-foundation.md)
+
+## Remaining MVP phases
 
 ### Phase 5 — Selection API
 

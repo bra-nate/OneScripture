@@ -1,0 +1,9 @@
+.cache
+.git
+.next
+artifacts
+node_modules
+worker/__pycache__
+worker/tests
+*.pyc
+.env*

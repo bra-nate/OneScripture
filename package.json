@@ -14,7 +14,12 @@
     "kokoro:proof:male": "bash scripts/kokoro-phase0.sh --voice am_michael --output-dir artifacts/kokoro-phase0/am_michael",
     "scripture:import:web": "tsx --env-file-if-exists=.env.local scripts/import-web-catalogue.ts",
     "scripture:verify": "tsx --env-file-if-exists=.env.local scripts/verify-scripture-catalogue.ts",
-    "audio:verify-storage": "tsx --env-file-if-exists=.env.local scripts/verify-audio-storage.ts"
+    "audio:verify-storage": "tsx --env-file-if-exists=.env.local scripts/verify-audio-storage.ts",
+    "worker:test": "python3 -m unittest discover -s worker/tests -v",
+    "worker:proof:prepare": "tsx --env-file-if-exists=.env.local scripts/verify-kokoro-worker.ts prepare",
+    "worker:proof:verify": "tsx --env-file-if-exists=.env.local scripts/verify-kokoro-worker.ts verify",
+    "topics:validate": "tsx scripts/publish-topical-scriptures.ts",
+    "topics:publish": "tsx --env-file-if-exists=.env.local scripts/publish-topical-scriptures.ts --apply"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

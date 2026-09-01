@@ -1,0 +1,17 @@
+services:
+  kokoro-worker:
+    build:
+      context: ..
+      dockerfile: worker/Dockerfile
+    env_file:
+      - path: worker.env
+        required: false
+    init: true
+    restart: unless-stopped
+    mem_limit: 5g
+    cpus: 2
+    volumes:
+      - kokoro-model-cache:/home/onescripture/.cache/huggingface
+
+volumes:
+  kokoro-model-cache:

@@ -1,0 +1,9 @@
+# Exact versions proven for the Phase 0 Kokoro pipeline plus the worker's
+# hosted Supabase client. Update deliberately and repeat the audio proof.
+kokoro==0.9.4
+misaki[en]==0.9.4
+numpy==2.5.2
+soundfile==0.13.1
+spacy==3.8.16
+supabase==2.31.0
+transformers==5.16.1
