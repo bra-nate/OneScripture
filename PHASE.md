@@ -92,10 +92,19 @@ Evidence:
 
 ## Remaining MVP phases
 
-### Phase 5 — Selection API
+### Phase 5 — Selection API (Active)
 
 Selection creation/status/retry routes, limits, rate limiting, asset reuse, and
 deterministic readiness responses.
+
+- [x] Define and test the bounded request, voice, hashing, and response contract.
+- [ ] Add atomic selection, asset, job, and rate-limit orchestration.
+- [ ] Implement create, status, and retry routes.
+- [ ] Verify ready-asset reuse and missing-asset enqueue behavior.
+- [ ] Verify one verse, range, chapter, and unrelated-reference selections.
+
+Foundation:
+[`docs/superpowers/phase5/selection-api-foundation.md`](docs/superpowers/phase5/selection-api-foundation.md)
 
 ### Phase 6 — Vibrant design-system foundation
 
