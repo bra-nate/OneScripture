@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { signIn, signUp } from "@/app/(auth)/actions";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
+import { Button, Field, Status } from "@/components/ui";
+import { routes } from "@/config/routes";
 
 export interface AuthFormProps {
   mode: "signup" | "login";
@@ -21,13 +23,13 @@ export function AuthForm({
 
   if (checkEmail) {
     return (
-      <p className="font-sans text-sm text-text-primary">
-        Check your inbox to confirm your email, then{" "}
-        <Link href="/login" className="text-accent hover:text-accent-light">
+      <Status label="Check your inbox" tone="information">
+        Confirm your email, then{" "}
+        <Link href={routes.login} className="font-semibold underline">
           log in
         </Link>
         .
-      </p>
+      </Status>
     );
   }
 
@@ -42,54 +44,47 @@ export function AuthForm({
     });
   }
 
-  const inputClass =
-    "rounded-md border border-border bg-background px-3 py-2 font-sans text-sm text-text-primary outline-none focus:border-accent";
-
   return (
     <form action={onSubmit} className="flex flex-col gap-4">
-      <input
-        aria-label="Email"
-        name="email"
-        type="email"
-        placeholder="Email"
-        autoComplete="email"
-        required
-        className={inputClass}
-      />
-      <input
-        aria-label="Password"
-        name="password"
-        type="password"
-        placeholder="Password"
-        autoComplete={mode === "signup" ? "new-password" : "current-password"}
-        required
-        className={inputClass}
-      />
+      <Field isLabelHidden label="Email" name="email">
+        <Field.Input
+          autoComplete="email"
+          name="email"
+          placeholder="Email"
+          required
+          type="email"
+        />
+      </Field>
+      <Field isLabelHidden label="Password" name="password">
+        <Field.Input
+          autoComplete={mode === "signup" ? "new-password" : "current-password"}
+          name="password"
+          placeholder="Password"
+          required
+          type="password"
+        />
+      </Field>
       {error && (
-        <p aria-live="polite" className="font-sans text-sm text-red-400">
+        <Status aria-live="polite" label="Unable to continue" tone="danger">
           {error}
-        </p>
+        </Status>
       )}
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-accent px-4 py-2 font-sans text-sm font-medium text-background transition-colors hover:bg-accent-light disabled:opacity-60"
-      >
+      <Button isPending={pending} type="submit">
         {mode === "signup" ? "Create Account" : "Sign In"}
-      </button>
+      </Button>
       <OAuthButtons />
       <p className="text-center font-sans text-sm text-text-muted">
         {mode === "signup" ? (
           <>
             Already have an account?{" "}
-            <Link href="/login" className="text-accent hover:text-accent-light">
+            <Link href={routes.login} className="text-accent hover:text-accent-light">
               Sign in →
             </Link>
           </>
         ) : (
           <>
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-accent hover:text-accent-light">
+            <Link href={routes.signup} className="text-accent hover:text-accent-light">
               Sign up →
             </Link>
           </>

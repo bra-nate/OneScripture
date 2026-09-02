@@ -1,23 +1,273 @@
 @import "tailwindcss";
 
-@theme {
+:root {
+  --color-electric-blue: #0000ee;
+  --color-vivid-red: #ff0000;
+  --color-open-teal: #02afe0;
+  --color-scripture-yellow: #ffed00;
+  --color-heather-purple: #724d99;
+  --color-electric-purple: #7417d0;
+
+  --color-ink: #111018;
+  --color-ink-soft: #211f2a;
+  --color-paper: #f7f4ea;
+  --color-paper-soft: #ece8dc;
+  --color-muted-dark: #514d5b;
+  --color-muted-light: #c8c2b6;
+
+  --color-success: #0a841e;
+  --color-information: #006e91;
+  --color-warning: #ffed00;
+  --color-danger: #c91414;
+  --color-active: var(--color-electric-purple);
+
+  --color-success-surface: #dff3df;
+  --color-success-foreground: #064f14;
+  --color-information-surface: #d8f0f7;
+  --color-information-foreground: #00445b;
+  --color-warning-surface: #fff8aa;
+  --color-warning-foreground: #403900;
+  --color-danger-surface: #f8dfdc;
+  --color-danger-foreground: #7d0a0a;
+
+  --gradient-horizon: linear-gradient(rgb(91, 97, 143) 0%, rgb(255, 255, 255) 100%);
+  --gradient-ready: linear-gradient(rgb(10, 157, 13) 0%, rgb(10, 132, 30), rgb(6, 111, 23) 105.88%);
+  --texture-grain: url("/textures/grain.svg");
+
+  --page-background: var(--color-scripture-yellow);
+  --page-foreground: var(--color-ink);
+  --page-muted: color-mix(in oklch, var(--page-foreground) 82%, transparent);
+  --page-surface: color-mix(in oklch, var(--color-paper) 82%, var(--page-background));
+  --page-surface-strong: var(--color-ink);
+  --page-surface-strong-foreground: var(--color-paper);
+  --page-border: color-mix(in oklch, var(--page-foreground) 24%, transparent);
+  --page-focus: var(--page-foreground);
+  --page-highlight: color-mix(in oklch, var(--color-paper) 24%, transparent);
+  --page-accent: var(--page-foreground);
+  --page-accent-hover: var(--color-ink-soft);
+
+  --chrome-background: transparent;
+  --chrome-foreground: var(--color-ink);
+  --chrome-muted: color-mix(in oklch, var(--color-ink) 82%, transparent);
+  --chrome-border: color-mix(in oklch, var(--color-ink) 24%, transparent);
+  --chrome-accent: var(--color-ink);
+}
+
+@theme inline {
   --font-serif-display: Georgia, "Times New Roman", serif;
   --font-ui-sans: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
 
-  --color-background: #0a0a0f;
-  --color-surface: #13131a;
-  --color-border: #1e1e2e;
-  --color-accent: #c9a84c;
-  --color-accent-light: #e8c97a;
-  --color-text-primary: #f0ede8;
-  --color-text-muted: #7a7a8a;
-
   --font-display: var(--font-serif-display);
   --font-sans: var(--font-ui-sans);
+
+  --color-background: var(--page-background);
+  --color-surface: var(--page-surface);
+  --color-surface-strong: var(--page-surface-strong);
+  --color-surface-strong-foreground: var(--page-surface-strong-foreground);
+  --color-border: var(--page-border);
+  --color-accent: var(--page-accent);
+  --color-accent-light: var(--page-accent-hover);
+  --color-text-primary: var(--page-foreground);
+  --color-text-muted: var(--page-muted);
+  --color-focus: var(--page-focus);
+
+  --color-state-success: var(--color-success);
+  --color-state-success-surface: var(--color-success-surface);
+  --color-state-success-foreground: var(--color-success-foreground);
+  --color-state-information: var(--color-information);
+  --color-state-information-surface: var(--color-information-surface);
+  --color-state-information-foreground: var(--color-information-foreground);
+  --color-state-warning: var(--color-warning);
+  --color-state-warning-surface: var(--color-warning-surface);
+  --color-state-warning-foreground: var(--color-warning-foreground);
+  --color-state-danger: var(--color-danger);
+  --color-state-danger-surface: var(--color-danger-surface);
+  --color-state-danger-foreground: var(--color-danger-foreground);
+  --color-state-active: var(--color-active);
+}
+
+[data-page-theme="search"] {
+  --page-background: var(--color-open-teal);
+}
+
+[data-page-theme="browse-books"],
+[data-page-theme="login"] {
+  --page-background: var(--color-electric-blue);
+  --page-foreground: var(--color-paper);
+  --page-surface: color-mix(in oklch, var(--color-electric-blue) 78%, var(--color-ink));
+  --page-surface-strong: var(--color-paper);
+  --page-surface-strong-foreground: var(--color-ink);
+  --page-highlight: color-mix(in oklch, var(--color-paper) 16%, transparent);
+  --page-accent: var(--color-scripture-yellow);
+  --page-accent-hover: var(--color-paper);
+}
+
+[data-page-theme="browse-chapters"],
+[data-page-theme="settings"] {
+  --page-background: var(--color-heather-purple);
+  --page-foreground: var(--color-paper);
+  --page-surface: color-mix(in oklch, var(--color-heather-purple) 74%, var(--color-ink));
+  --page-highlight: color-mix(in oklch, var(--color-paper) 14%, transparent);
+  --page-accent: var(--color-scripture-yellow);
+  --page-accent-hover: var(--color-paper);
+}
+
+[data-page-theme="passage"] {
+  --page-background: var(--color-electric-purple);
+  --page-foreground: var(--color-paper);
+  --page-surface: var(--color-ink-soft);
+  --page-highlight: color-mix(in oklch, var(--color-paper) 14%, transparent);
+  --page-accent: var(--color-scripture-yellow);
+  --page-accent-hover: var(--color-paper);
+}
+
+[data-page-theme="history"] {
+  --page-background: var(--gradient-horizon);
+  --page-foreground: var(--color-ink);
+  --page-surface: color-mix(in oklch, var(--color-paper) 84%, var(--color-heather-purple));
+  --page-highlight: color-mix(in oklch, var(--color-paper) 26%, transparent);
+  --page-accent: var(--color-electric-blue);
+  --page-accent-hover: var(--color-electric-purple);
+}
+
+[data-page-theme="topics"] {
+  --page-background: var(--color-heather-purple);
+  --page-foreground: var(--color-paper);
+  --page-surface: color-mix(in oklch, var(--color-heather-purple) 74%, var(--color-ink));
+  --page-highlight: color-mix(in oklch, var(--color-paper) 14%, transparent);
+  --page-accent: var(--color-scripture-yellow);
+  --page-accent-hover: var(--color-paper);
+}
+
+[data-page-theme="browse-books"],
+[data-page-theme="browse-chapters"],
+[data-page-theme="passage"],
+[data-page-theme="playlists"],
+[data-page-theme="settings"],
+[data-page-theme="login"],
+[data-page-theme="topics"] {
+  --page-muted: color-mix(in oklch, var(--color-paper) 82%, transparent);
+  --page-border: color-mix(in oklch, var(--color-paper) 28%, transparent);
+  --page-focus: var(--color-paper);
+  --chrome-foreground: var(--color-paper);
+  --chrome-muted: color-mix(in oklch, var(--color-paper) 82%, transparent);
+  --chrome-border: color-mix(in oklch, var(--color-paper) 28%, transparent);
+  --chrome-accent: var(--color-scripture-yellow);
+}
+
+[data-page-theme="dashboard"],
+[data-page-theme="history"] {
+  --chrome-background: color-mix(in oklch, var(--color-paper) 92%, transparent);
+  --chrome-foreground: var(--color-ink);
+  --chrome-muted: var(--color-muted-dark);
+  --chrome-border: color-mix(in oklch, var(--color-ink) 20%, transparent);
+  --chrome-accent: var(--color-electric-blue);
+}
+
+[data-page-theme="dashboard"] {
+  --page-background: var(--gradient-ready);
+  --page-foreground: var(--color-ink);
+  --page-surface: color-mix(in oklch, var(--color-paper) 82%, var(--color-success));
+  --page-highlight: color-mix(in oklch, var(--color-paper) 20%, transparent);
+}
+
+[data-page-theme="playlists"] {
+  --page-background: var(--color-electric-blue);
+  --page-foreground: var(--color-paper);
+  --page-surface: color-mix(in oklch, var(--color-electric-blue) 76%, var(--color-ink));
+  --page-highlight: color-mix(in oklch, var(--color-open-teal) 34%, transparent);
+  --page-accent: var(--color-scripture-yellow);
+  --page-accent-hover: var(--color-paper);
+}
+
+[data-page-theme="favourites"],
+[data-page-theme="download"] {
+  --page-background: var(--color-vivid-red);
+  --page-foreground: var(--color-ink);
+  --page-surface: color-mix(in oklch, var(--color-paper) 74%, var(--color-vivid-red));
+  --page-highlight: color-mix(in oklch, var(--color-paper) 20%, transparent);
+  --page-muted: color-mix(in oklch, var(--color-ink) 92%, transparent);
+  --chrome-muted: color-mix(in oklch, var(--color-ink) 92%, transparent);
+}
+
+[data-page-theme="signup"] {
+  --page-background: var(--color-scripture-yellow);
+}
+
+* {
+  border-color: var(--page-border);
+}
+
+html {
+  min-height: 100%;
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
+  min-height: 100%;
+  background: var(--color-ink);
+  color: var(--page-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--page-foreground);
+  color: var(--page-background);
+}
+
+:focus-visible {
+  outline-color: var(--page-focus);
+}
+
+.page-canvas {
+  isolation: isolate;
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 82% 8%, var(--page-highlight), transparent 44%),
+    var(--page-background);
+  color: var(--page-foreground);
+}
+
+.page-canvas::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background-image: var(--texture-grain);
+  background-size: 192px 192px;
+  mix-blend-mode: soft-light;
+  opacity: 0.028;
+}
+
+.app-chrome {
+  --page-foreground: var(--chrome-foreground);
+  --page-muted: var(--chrome-muted);
+  --page-border: var(--chrome-border);
+  --page-focus: var(--chrome-foreground);
+  --page-accent: var(--chrome-accent);
+  --page-accent-hover: var(--chrome-foreground);
+  background: var(--chrome-background);
+  color: var(--chrome-foreground);
+}
+
+.surface-strong-context {
+  --page-foreground: var(--page-surface-strong-foreground);
+  --page-muted: color-mix(in oklch, var(--page-surface-strong-foreground) 82%, transparent);
+  --page-border: color-mix(in oklch, var(--page-surface-strong-foreground) 24%, transparent);
+  --page-focus: var(--page-surface-strong-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

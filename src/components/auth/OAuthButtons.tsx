@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { signInWithOAuth } from "@/app/(auth)/actions";
+import { Button, Status } from "@/components/ui";
 import { type OAuthProvider } from "@/lib/auth/oauth";
 
 type ProviderOption = {
@@ -55,24 +56,24 @@ export function OAuthButtons() {
         const buttonLabel = isCurrentProvider ? "Redirecting…" : label;
 
         return (
-          <button
+          <Button
             key={id}
             type="button"
+            variant="secondary"
             disabled={!isEnabled || isPending}
             title={isEnabled ? undefined : `${label} setup pending`}
             onClick={() => handleSignIn(id)}
-            className="rounded-md border border-border px-4 py-2 font-sans text-sm text-text-primary transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             {buttonLabel}
             {!isEnabled && " — setup pending"}
-          </button>
+          </Button>
         );
       })}
 
       {error && (
-        <p aria-live="polite" className="font-sans text-sm text-red-400">
+        <Status aria-live="polite" label="Provider sign-in failed" tone="danger">
           {error}
-        </p>
+        </Status>
       )}
     </div>
   );

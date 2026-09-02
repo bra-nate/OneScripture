@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { Button, Surface } from "@/components/ui";
+
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds)) return "0:00";
   const minutes = Math.floor(seconds / 60);
@@ -45,7 +47,7 @@ export function AudioPlayer({ src }: { src: string }) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
+    <Surface className="p-5" variant="strong">
       <audio
         ref={audioRef}
         src={src}
@@ -56,14 +58,15 @@ export function AudioPlayer({ src }: { src: string }) {
       />
       <div className="flex flex-col gap-5">
         <div className="flex items-center gap-4">
-          <button
+          <Button
             type="button"
             onClick={togglePlayback}
-            className="grid size-12 place-items-center rounded-full bg-accent font-sans text-sm font-semibold text-background transition-colors hover:bg-accent-light"
+            size="circle"
+            variant="secondary"
             aria-label={isPlaying ? "Pause audio" : "Play audio"}
           >
             {isPlaying ? "Pause" : "Play"}
-          </button>
+          </Button>
           <div>
             <p className="font-sans text-sm font-medium text-text-primary">
               Scripture audio
@@ -85,21 +88,19 @@ export function AudioPlayer({ src }: { src: string }) {
         />
         <div className="flex flex-wrap gap-2">
           {[0.75, 1, 1.25, 1.5].map((value) => (
-            <button
+            <Button
               key={value}
               type="button"
               onClick={() => setSpeed(value)}
-              className={
-                value === speed
-                  ? "rounded-md bg-accent px-3 py-2 font-sans text-xs font-semibold text-background"
-                  : "rounded-md border border-border px-3 py-2 font-sans text-xs text-text-muted transition-colors hover:border-accent hover:text-accent"
-              }
+              aria-pressed={value === speed}
+              size="small"
+              variant={value === speed ? "primary" : "secondary"}
             >
               {value}x
-            </button>
+            </Button>
           ))}
         </div>
       </div>
-    </div>
+    </Surface>
   );
 }

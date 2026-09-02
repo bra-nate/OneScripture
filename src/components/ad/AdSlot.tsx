@@ -1,4 +1,5 @@
 import { APP_CONFIG } from "@/config/app";
+import { Surface } from "@/components/ui";
 
 export type AdSlotId =
   | "homepage-hero"
@@ -14,9 +15,8 @@ export type AdSlotId =
 export function AdSlot({ slotId }: { slotId: AdSlotId }) {
   if (!APP_CONFIG.ADS_ENABLED) return null;
   return (
-    <div
+    <Surface
       data-slot-id={slotId}
-      className="rounded-md border border-border bg-surface"
     />
   );
 }

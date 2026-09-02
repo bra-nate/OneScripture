@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
+import { PageCanvas } from "@/components/theme/PageCanvas";
 
 export const metadata: Metadata = {
   title: "OneScripture",
@@ -14,10 +15,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className="h-full antialiased"
     >
-      <body className="min-h-full flex flex-col bg-background text-text-primary">
-        <Nav />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <Footer />
+      <body>
+        <PageCanvas>
+          <Nav />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <Footer />
+        </PageCanvas>
       </body>
     </html>
   );

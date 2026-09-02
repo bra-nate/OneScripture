@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdSlot } from "@/components/ad/AdSlot";
 import { PassageSearchForm } from "@/components/search/PassageSearchForm";
+import { routes } from "@/config/routes";
 
 export default function Home() {
   return (
@@ -22,10 +23,16 @@ export default function Home() {
           <PassageSearchForm />
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <Link
-              href="/browse"
+              href={routes.browse}
               className="font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light"
             >
               Browse by book
+            </Link>
+            <Link
+              href={routes.topics.index}
+              className="font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light"
+            >
+              Explore topical scriptures
             </Link>
             <span className="font-sans text-sm text-text-muted">
               Try John 3:16, Psalms 23, or Romans 8:28.

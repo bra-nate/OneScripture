@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { Surface } from "@/components/ui";
+import { routes } from "@/config/routes";
+
 export function AuthCard({
   heading,
   subtext,
@@ -11,10 +14,10 @@ export function AuthCard({
 }) {
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-16">
-      <div className="w-full max-w-sm rounded-lg border border-border bg-surface p-8">
+      <Surface className="w-full max-w-sm p-8">
         <Link
-          href="/"
-          className="mb-6 block text-center font-display text-2xl text-accent"
+          href={routes.home}
+          className="mb-6 block text-center font-display text-2xl text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
         >
           OneScripture
         </Link>
@@ -25,7 +28,7 @@ export function AuthCard({
           <p className="mt-1 font-sans text-sm text-text-muted">{subtext}</p>
         )}
         <div className="mt-6">{children}</div>
-      </div>
+      </Surface>
     </div>
   );
 }

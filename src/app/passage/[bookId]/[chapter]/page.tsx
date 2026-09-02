@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { VerseList } from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
 import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
+import { Status, Surface } from "@/components/ui";
 import { formatDisplayRef, getBook, type PassageRef } from "@/lib/bible/reference";
 import { getCanonicalPassage } from "@/lib/scripture/catalogue";
 import { ScriptureError } from "@/lib/scripture/errors";
@@ -70,23 +71,15 @@ export default async function PassagePage({
 
         <div className="mt-8">
           {catalogueError ? (
-            <div
-              role="status"
-              className="rounded-lg border border-border bg-surface p-5"
-            >
-              <h2 className="font-sans text-lg font-semibold text-text-primary">
-                Scripture text unavailable
-              </h2>
-              <p className="mt-2 font-sans text-sm leading-6 text-text-muted">
-                {catalogueError}
-              </p>
-            </div>
+            <Status label="Scripture text unavailable" tone="information">
+              {catalogueError}
+            </Status>
           ) : (
             passage && <VerseList verses={passage.verses} />
           )}
         </div>
 
-        <div className="mt-8 rounded-lg border border-border bg-surface p-5">
+        <Surface className="mt-8 p-5">
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent">
             Audio preparation
           </p>
@@ -94,7 +87,7 @@ export default async function PassagePage({
             Self-hosted verse narration will connect to this canonical text in
             the audio-catalogue phase. No third-party audio is used here.
           </p>
-        </div>
+        </Surface>
       </div>
 
       <aside>

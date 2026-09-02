@@ -106,10 +106,20 @@ deterministic readiness responses.
 Evidence:
 [`docs/superpowers/phase5/selection-api-foundation.md`](docs/superpowers/phase5/selection-api-foundation.md)
 
-### Phase 6 — Vibrant design-system foundation
+### Phase 6 — Vibrant design-system foundation (Complete)
 
 Route themes, shared primitives, static grain, accessible foregrounds, and
 responsive shared chrome.
+
+- [x] Add canonical brand, foundation-neutral, semantic-state, and page tokens.
+- [x] Add a typed deterministic route-theme registry.
+- [x] Add the local static grain texture and shared page canvas.
+- [x] Create shared button, field, status, and surface primitives.
+- [x] Refactor shared navigation and footer for responsive themed contexts.
+- [x] Apply and visually verify every route theme and foreground pairing.
+
+Evidence:
+[`docs/superpowers/phase6/design-system-foundation.md`](docs/superpowers/phase6/design-system-foundation.md)
 
 ### Phase 7 — Playback MVP
 

@@ -126,12 +126,20 @@ export function parseReference(input: string): PassageRef | null {
  * Format a PassageRef for display, e.g. "John 3:16–17 · ESV".
  * Uses an en-dash between verses and " · " before the translation.
  */
-export function formatDisplayRef(ref: PassageRef, translationAbbr: string): string {
+export function formatPassageRef(ref: PassageRef): string {
   const name = ID_TO_NAME.get(ref.bookId) ?? ref.bookId;
   let passage = `${name} ${ref.chapter}`;
   if (ref.verseStart !== null) {
     passage += `:${ref.verseStart}`;
     if (ref.verseEnd !== null) passage += `–${ref.verseEnd}`;
   }
-  return `${passage} · ${translationAbbr}`;
+  return passage;
+}
+
+export function serializePassageRef(ref: PassageRef): string {
+  return formatPassageRef(ref).replace("–", "-");
+}
+
+export function formatDisplayRef(ref: PassageRef, translationAbbr: string): string {
+  return `${formatPassageRef(ref)} · ${translationAbbr}`;
 }

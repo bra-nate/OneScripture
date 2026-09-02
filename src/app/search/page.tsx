@@ -1,4 +1,6 @@
 import Link from "next/link";
+
+import { SearchEmptyState } from "@/app/search/(components)/SearchEmptyState";
 import { PassageSearchForm } from "@/components/search/PassageSearchForm";
 import { formatDisplayRef, parseReference } from "@/lib/bible/reference";
 import { getTranslation } from "@/lib/bible/translations";
@@ -25,7 +27,7 @@ export default async function SearchPage({
 
       <div className="mt-10">
         {!query ? (
-          <EmptyState
+          <SearchEmptyState
             title="Start with a passage reference"
             body="Search by book and chapter, or include a verse range."
           />
@@ -47,29 +49,12 @@ export default async function SearchPage({
             </p>
           </Link>
         ) : (
-          <EmptyState
+          <SearchEmptyState
             title="No passage match"
             body="OneScripture currently supports direct passage references such as John 3:16, Psalms 23, or Romans 8:28."
           />
         )}
       </div>
     </section>
-  );
-}
-
-function EmptyState({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface p-6">
-      <h2 className="font-sans text-lg font-semibold text-text-primary">
-        {title}
-      </h2>
-      <p className="mt-2 font-sans text-sm leading-6 text-text-muted">{body}</p>
-      <Link
-        href="/browse"
-        className="mt-5 inline-flex font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light"
-      >
-        Browse by book
-      </Link>
-    </div>
   );
 }

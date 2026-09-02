@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { AdSlot } from "@/components/ad/AdSlot";
+import { ButtonLink, Surface } from "@/components/ui";
+import { routes } from "@/config/routes";
 
 export default async function DownloadPage({
   searchParams,
@@ -17,7 +18,7 @@ export default async function DownloadPage({
 
   return (
     <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 py-16">
-      <div className="rounded-lg border border-border bg-surface p-8">
+      <Surface className="p-8">
         <p className="font-sans text-sm uppercase tracking-[0.2em] text-accent">
           Download ready
         </p>
@@ -31,20 +32,20 @@ export default async function DownloadPage({
           <AdSlot slotId="download-interstitial" />
         </div>
         <div className="mt-8 flex flex-wrap gap-3">
-          <a
+          <ButtonLink
             href={downloadHref}
-            className="rounded-md bg-accent px-5 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-background transition-colors hover:bg-accent-light"
+            size="large"
           >
             Download MP3
-          </a>
-          <Link
-            href="/"
-            className="rounded-md border border-border px-5 py-3 font-sans text-sm font-semibold text-text-muted transition-colors hover:border-accent hover:text-accent"
+          </ButtonLink>
+          <ButtonLink
+            href={routes.home}
+            variant="secondary"
           >
             Back home
-          </Link>
+          </ButtonLink>
         </div>
-      </div>
+      </Surface>
     </section>
   );
 }
