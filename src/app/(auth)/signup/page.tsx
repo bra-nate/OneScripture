@@ -5,7 +5,7 @@ export default function SignUpPage() {
   return (
     <AuthCard
       heading="Create your account"
-      subtext="Save playlists · Track downloads · Bookmark favourites"
+      subtext="Save playlists · Build collections · Bookmark favourites"
     >
       <AuthForm mode="signup" />
     </AuthCard>

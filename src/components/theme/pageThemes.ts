@@ -19,7 +19,6 @@ const ROUTE_THEME_RULES: RouteThemeRule[] = [
   { matches: (pathname) => pathname === "/settings", theme: "settings" },
   { matches: (pathname) => pathname === "/login", theme: "login" },
   { matches: (pathname) => pathname === "/signup", theme: "signup" },
-  { matches: (pathname) => pathname === "/download", theme: "download" },
 ];
 
 export function getPageTheme(pathname: string): PageTheme {

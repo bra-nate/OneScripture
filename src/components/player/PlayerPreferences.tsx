@@ -24,7 +24,7 @@ export function PlayerPreferences({
             aria-pressed={preferences.voiceId === "af_heart"}
             onClick={() => onChange({ voiceId: "af_heart" })}
             size="small"
-            variant={preferences.voiceId === "af_heart" ? "primary" : "secondary"}
+            variant={preferences.voiceId === "af_heart" ? "selected" : "secondary"}
           >
             Female
           </Button>
@@ -32,7 +32,7 @@ export function PlayerPreferences({
             aria-pressed={preferences.voiceId === "am_michael"}
             onClick={() => onChange({ voiceId: "am_michael" })}
             size="small"
-            variant={preferences.voiceId === "am_michael" ? "primary" : "secondary"}
+            variant={preferences.voiceId === "am_michael" ? "selected" : "secondary"}
           >
             Male
           </Button>
@@ -50,7 +50,7 @@ export function PlayerPreferences({
               key={speed}
               onClick={() => onChange({ speed })}
               size="small"
-              variant={preferences.speed === speed ? "primary" : "secondary"}
+              variant={preferences.speed === speed ? "selected" : "secondary"}
             >
               {speed}×
             </Button>
@@ -62,7 +62,8 @@ export function PlayerPreferences({
         Volume {Math.round(preferences.volume * 100)}%
         <input
           aria-label="Playback volume"
-          className="mt-4 w-full accent-accent"
+          aria-valuetext={`${Math.round(preferences.volume * 100)} percent`}
+          className="mt-2 min-h-11 w-full accent-accent"
           max="1"
           min="0"
           onChange={(event) => onChange({ volume: Number(event.target.value) })}

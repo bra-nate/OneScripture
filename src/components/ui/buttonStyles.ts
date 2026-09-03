@@ -1,6 +1,6 @@
 import { classNames } from "@/components/ui/classNames";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "selected" | "ghost";
 export type ButtonSize = "small" | "medium" | "large" | "circle";
 
 interface ButtonStyleOptions {
@@ -27,12 +27,14 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
     "border border-transparent bg-surface-strong text-surface-strong-foreground hover:opacity-85",
   secondary:
     "border border-current bg-transparent text-text-primary hover:bg-surface hover:text-accent",
+  selected:
+    "border border-accent bg-accent text-background hover:opacity-85",
   ghost:
     "border border-transparent bg-transparent text-text-primary hover:bg-surface",
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
-  small: "min-h-10 px-3 py-2 text-xs",
+  small: "min-h-11 px-3 py-2 text-xs",
   medium: "min-h-12 px-5 py-3",
   large: "min-h-12 px-6 py-3 uppercase tracking-wide",
   circle: "size-12 rounded-full p-0",

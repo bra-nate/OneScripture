@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
@@ -68,6 +69,14 @@ class FakeGateway:
         return "queued" if getattr(error, "retryable", False) else "failed"
 
 
+class RestartableGateway(FakeGateway):
+    def fail(self, job: ClaimedJob, error: Exception) -> str:
+        next_status = super().fail(job, error)
+        if next_status == "queued":
+            self.job = replace(job, attempt_count=job.attempt_count + 1)
+        return next_status
+
+
 class FakeSynthesizer:
     def __init__(self, error: Exception | None = None) -> None:
         self.error = error
@@ -126,6 +135,36 @@ class AudioWorkerTests(unittest.TestCase):
         self.assertTrue(worker.run_once())
         self.assertIsInstance(gateway.failed, TransientWorkerError)
         self.assertIsNone(gateway.completed)
+        self.assertEqual(list(self.settings.temp_directory.iterdir()), [])
+
+    def test_a_restarted_worker_completes_a_durably_requeued_job(self) -> None:
+        gateway = RestartableGateway(make_job())
+        interrupted_worker = AudioWorker(
+            self.settings,
+            gateway,
+            FakeSynthesizer(
+                TransientWorkerError("worker_stopped", "simulated restart")
+            ),
+        )
+
+        self.assertTrue(interrupted_worker.run_once())
+        self.assertIsNotNone(gateway.job)
+        self.assertEqual(gateway.job.attempt_count, 2)
+
+        def encode(_wav_path: Path, mp3_path: Path) -> int:
+            mp3_path.write_bytes(b"restarted-worker-mp3")
+            return 7200
+
+        restarted_worker = AudioWorker(
+            self.settings,
+            gateway,
+            FakeSynthesizer(),
+            encode,
+        )
+
+        self.assertTrue(restarted_worker.run_once())
+        self.assertEqual(gateway.uploaded[1], b"restarted-worker-mp3")
+        self.assertEqual(gateway.completed[1], 7200)
         self.assertEqual(list(self.settings.temp_directory.iterdir()), [])
 
     def test_permanently_fails_tampered_canonical_text(self) -> None:

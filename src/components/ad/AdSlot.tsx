@@ -4,7 +4,6 @@ import { Surface } from "@/components/ui";
 export type AdSlotId =
   | "homepage-hero"
   | "player-sidebar"
-  | "download-interstitial"
   | "footer";
 
 /**

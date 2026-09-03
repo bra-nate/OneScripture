@@ -6,7 +6,7 @@ export type PassageRef = {
 };
 
 /**
- * Canonical book table: Bible.is book_id → display name, plus common aliases.
+ * Canonical book table: three-letter book ID → display name, plus common aliases.
  * Aliases are matched case-insensitively after whitespace normalisation.
  */
 type BookEntry = { id: string; name: string; aliases: string[] };

@@ -180,8 +180,7 @@
   --page-accent-hover: var(--color-paper);
 }
 
-[data-page-theme="favourites"],
-[data-page-theme="download"] {
+[data-page-theme="favourites"] {
   --page-background: var(--color-vivid-red);
   --page-foreground: var(--color-ink);
   --page-surface: color-mix(in oklch, var(--color-paper) 74%, var(--color-vivid-red));

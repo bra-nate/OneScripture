@@ -93,4 +93,24 @@ describe("AudioPlayer", () => {
     expect(audio.currentTime).toBe(0);
     expect(screen.getByLabelText("Pause scripture audio")).toBeTruthy();
   });
+
+  it("exposes descriptive range values to assistive technology", () => {
+    const view = render(
+      <AudioPlayer
+        items={[ITEMS[0]]}
+        onPreferencesChange={vi.fn()}
+        onRefreshItems={vi.fn().mockResolvedValue([ITEMS[0]])}
+        preferences={DEFAULT_PLAYBACK_PREFERENCES}
+      />,
+    );
+    const audio = view.container.querySelector("audio")!;
+
+    Object.defineProperty(audio, "duration", { configurable: true, value: 75 });
+    Object.defineProperty(audio, "currentTime", { configurable: true, value: 5 });
+    fireEvent.loadedMetadata(audio);
+    fireEvent.timeUpdate(audio);
+
+    expect(screen.getByLabelText("Audio progress").getAttribute("aria-valuetext"))
+      .toBe("0:05 of 1:15");
+  });
 });

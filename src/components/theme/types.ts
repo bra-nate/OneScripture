@@ -12,7 +12,6 @@ export const PAGE_THEMES = [
   "settings",
   "login",
   "signup",
-  "download",
 ] as const;
 
 export type PageTheme = (typeof PAGE_THEMES)[number];

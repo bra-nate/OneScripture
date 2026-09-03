@@ -136,7 +136,20 @@ preference persistence, preloading, and responsive behavior.
 Evidence:
 [`docs/superpowers/phase7/playback-mvp.md`](docs/superpowers/phase7/playback-mvp.md)
 
-### Phase 8 — Legacy removal and release safety
+### Phase 8 — Legacy removal and release safety (Complete)
 
 Remove Bible.is and arbitrary-download behavior from the product flow, update
 copy, add operational monitoring, and run recovery and accessibility checks.
+
+- [x] Remove the Bible.is client, audio resolver, spike, and obsolete types.
+- [x] Remove the public download page and arbitrary remote-MP3 proxy.
+- [x] Remove download promises and download-specific theme/advertising tokens
+  from the active product UI.
+- [x] Add queue-age, failed-job, disk-space, database-health, and HTTP-error
+  monitoring with actionable thresholds.
+- [x] Run and record backup-restore, storage-loss, worker-restart, and
+  expired-signed-URL recovery drills.
+- [x] Complete responsive and accessibility verification for the player.
+
+Evidence:
+[`docs/superpowers/phase8/legacy-removal-and-release-safety.md`](docs/superpowers/phase8/legacy-removal-and-release-safety.md)

@@ -215,13 +215,13 @@ export function AudioPlayer({
         </div>
       </div>
 
-      <input aria-label="Audio progress" className="w-full accent-accent" max={duration || 0} min="0" onChange={(event) => seek(event.target.value)} step="1" type="range" value={Math.min(currentTime, duration || currentTime)} />
+      <input aria-label="Audio progress" aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`} className="min-h-11 w-full accent-accent" max={duration || 0} min="0" onChange={(event) => seek(event.target.value)} step="1" type="range" value={Math.min(currentTime, duration || currentTime)} />
 
       <div className="flex flex-wrap gap-2">
-        <Button aria-pressed={preferences.mode === "once"} onClick={() => onPreferencesChange({ mode: "once" })} size="small" variant={preferences.mode === "once" ? "primary" : "secondary"}>
+        <Button aria-pressed={preferences.mode === "once"} onClick={() => onPreferencesChange({ mode: "once" })} size="small" variant={preferences.mode === "once" ? "selected" : "secondary"}>
           Play once
         </Button>
-        <Button aria-pressed={preferences.mode === "loop"} onClick={() => onPreferencesChange({ mode: "loop" })} size="small" variant={preferences.mode === "loop" ? "primary" : "secondary"}>
+        <Button aria-pressed={preferences.mode === "loop"} onClick={() => onPreferencesChange({ mode: "loop" })} size="small" variant={preferences.mode === "loop" ? "selected" : "secondary"}>
           Repeat selection
         </Button>
       </div>

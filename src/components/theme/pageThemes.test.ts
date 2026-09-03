@@ -18,7 +18,6 @@ describe("getPageTheme", () => {
     ["/settings", "settings"],
     ["/login", "login"],
     ["/signup", "signup"],
-    ["/download", "download"],
   ] as const)("maps %s to %s", (pathname, theme) => {
     expect(getPageTheme(pathname)).toBe(theme);
   });
