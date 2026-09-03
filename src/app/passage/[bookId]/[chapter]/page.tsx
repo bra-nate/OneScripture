@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { VerseList } from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
 import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
-import { Status, Surface } from "@/components/ui";
-import { formatDisplayRef, getBook, type PassageRef } from "@/lib/bible/reference";
+import { ScriptureAudioPlayer } from "@/components/player";
+import { Status } from "@/components/ui";
+import { formatDisplayRef, getBook, serializePassageRef, type PassageRef } from "@/lib/bible/reference";
 import { getCanonicalPassage } from "@/lib/scripture/catalogue";
 import { ScriptureError } from "@/lib/scripture/errors";
 import { type CanonicalPassage } from "@/lib/scripture/types";
@@ -79,15 +80,12 @@ export default async function PassagePage({
           )}
         </div>
 
-        <Surface className="mt-8 p-5">
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-            Audio preparation
-          </p>
-          <p className="mt-2 font-sans text-sm leading-6 text-text-muted">
-            Self-hosted verse narration will connect to this canonical text in
-            the audio-catalogue phase. No third-party audio is used here.
-          </p>
-        </Surface>
+        <div className="mt-8">
+          <ScriptureAudioPlayer
+            references={passage ? [serializePassageRef(reference)] : []}
+            title={displayReference}
+          />
+        </div>
       </div>
 
       <aside>

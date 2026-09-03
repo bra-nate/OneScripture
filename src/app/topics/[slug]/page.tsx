@@ -7,6 +7,7 @@ import { TopicPlaybackPreview } from "@/app/topics/[slug]/(components)/TopicPlay
 import { TopicCatalogueUnavailable } from "@/app/topics/(components)/TopicCatalogueUnavailable";
 import { routes } from "@/config/routes";
 import { getPublishedTopic } from "@/lib/topics/catalogue";
+import { buildTopicSelectionReferences } from "@/lib/topics/selections";
 import { type ScriptureTopic } from "@/lib/topics/types";
 
 interface TopicDetailPageProps {
@@ -73,7 +74,10 @@ export default async function TopicDetailPage({
             </p>
           </header>
 
-          <TopicPlaybackPreview passageCount={topic.passageCount} />
+          <TopicPlaybackPreview
+            references={buildTopicSelectionReferences(topic)}
+            title={topic.title}
+          />
 
           <div className="mt-16">
             <div className="mb-6 flex items-end justify-between gap-5">

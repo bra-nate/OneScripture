@@ -121,10 +121,20 @@ responsive shared chrome.
 Evidence:
 [`docs/superpowers/phase6/design-system-foundation.md`](docs/superpowers/phase6/design-system-foundation.md)
 
-### Phase 7 — Playback MVP
+### Phase 7 — Playback MVP (Complete)
 
 Ordered verse playback, preparation states, looping, voice/speed/volume controls,
 preference persistence, preloading, and responsive behavior.
+
+- [x] Establish the ordered selection client and versioned playback preferences.
+- [x] Add preparation, ready, empty, failure, and retry states.
+- [x] Add ordered playback, next/previous, play-once/repeat, voice, speed,
+  volume, current-reference, and next-verse preloading controls.
+- [x] Connect passage and topical scripture pages to the selection API.
+- [x] Verify refresh behavior and long-running loops in supported browsers.
+
+Evidence:
+[`docs/superpowers/phase7/playback-mvp.md`](docs/superpowers/phase7/playback-mvp.md)
 
 ### Phase 8 — Legacy removal and release safety
 
