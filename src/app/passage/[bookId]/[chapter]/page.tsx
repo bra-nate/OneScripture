@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { VerseList } from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
+import { ChapterReader } from "@/app/passage/[bookId]/[chapter]/(components)/ChapterReader";
 import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
-import { ScriptureAudioPlayer } from "@/components/player";
 import { Status } from "@/components/ui";
 import { formatDisplayRef, getBook, serializePassageRef, type PassageRef } from "@/lib/bible/reference";
+import { getOwnedPlaylistSummaries } from "@/lib/playlists/catalogue";
 import { getCanonicalPassage } from "@/lib/scripture/catalogue";
 import { ScriptureError } from "@/lib/scripture/errors";
 import { type CanonicalPassage } from "@/lib/scripture/types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function PassagePage({
   params,
@@ -33,6 +34,12 @@ export default async function PassagePage({
   const displayReference = formatDisplayRef(reference, "WEB");
   let passage: CanonicalPassage | null = null;
   let catalogueError: string | null = null;
+
+  const supabase = await createClient();
+  const [{ data: { user } }, playlists] = await Promise.all([
+    supabase.auth.getUser(),
+    getOwnedPlaylistSummaries(),
+  ]);
 
   try {
     passage = await getCanonicalPassage(reference);
@@ -70,22 +77,23 @@ export default async function PassagePage({
           </p>
         </header>
 
-        <div className="mt-8">
-          {catalogueError ? (
+        {catalogueError ? (
+          <div className="mt-8">
             <Status label="Scripture text unavailable" tone="information">
               {catalogueError}
             </Status>
-          ) : (
-            passage && <VerseList verses={passage.verses} />
-          )}
-        </div>
-
-        <div className="mt-8">
-          <ScriptureAudioPlayer
-            references={passage ? [serializePassageRef(reference)] : []}
-            title={displayReference}
-          />
-        </div>
+          </div>
+        ) : (
+          passage && (
+            <ChapterReader
+              chapterReference={serializePassageRef(reference)}
+              displayReference={displayReference}
+              isSignedIn={Boolean(user)}
+              playlists={playlists}
+              verses={passage.verses}
+            />
+          )
+        )}
       </div>
 
       <aside>

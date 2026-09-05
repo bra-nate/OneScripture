@@ -37,6 +37,12 @@ export async function Nav() {
               Dashboard
             </Link>
             <Link
+              href={routes.playlists.index}
+              className="transition-colors hover:text-accent"
+            >
+              Playlists
+            </Link>
+            <Link
               href={routes.settings}
               className="transition-colors hover:text-accent"
             >
