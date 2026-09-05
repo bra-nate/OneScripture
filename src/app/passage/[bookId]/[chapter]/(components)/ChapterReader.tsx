@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
-import { VerseList } from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
+import {
+  VerseList,
+  formatVerseReference,
+} from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
+import { toggleVerseSelection } from "@/app/passage/[bookId]/[chapter]/(utils)/verseSelection";
 import { ScriptureAudioPlayer } from "@/components/player";
 import { Button } from "@/components/ui";
 import { type PlaylistSummary } from "@/lib/playlists/types";
@@ -23,45 +27,117 @@ export function ChapterReader({
   playlists,
   verses,
 }: ChapterReaderProps) {
-  const [listeningReference, setListeningReference] = useState(chapterReference);
-  const playerTitle = listeningReference === chapterReference
-    ? displayReference
-    : `${listeningReference} · WEB`;
+  const playerRef = useRef<HTMLDivElement>(null);
+  const lastToggledRef = useRef<number | null>(null);
+  const [selectedVerses, setSelectedVerses] = useState<ReadonlySet<number>>(new Set());
+  const [singleReference, setSingleReference] = useState<string | null>(null);
+  const [activeReference, setActiveReference] = useState<string | null>(null);
 
-  function handleListen(reference: string) {
-    setListeningReference(reference);
+  const references = useMemo(() => {
+    if (selectedVerses.size > 0) {
+      return verses
+        .filter((verse) => selectedVerses.has(verse.verse))
+        .map(formatVerseReference);
+    }
+    return [singleReference ?? chapterReference];
+  }, [chapterReference, selectedVerses, singleReference, verses]);
+
+  const playerTitle =
+    selectedVerses.size > 0
+      ? `${selectedVerses.size} selected ${selectedVerses.size === 1 ? "verse" : "verses"}`
+      : singleReference
+        ? `${singleReference} · WEB`
+        : displayReference;
+
+  function revealPlayer() {
     window.requestAnimationFrame(() => {
-      document.getElementById("scripture-player")?.scrollIntoView({
-        behavior: "smooth",
+      const player = playerRef.current;
+      if (!player) return;
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      player.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
         block: "start",
       });
+      // Keyboard and screen-reader users need to follow the scroll.
+      player.focus({ preventScroll: true });
     });
+  }
+
+  function handleListen(reference: string | null) {
+    setSelectedVerses(new Set());
+    lastToggledRef.current = null;
+    setSingleReference(reference);
+    revealPlayer();
+  }
+
+  function handleToggleVerse(verse: number, isRangeExtend: boolean) {
+    setSelectedVerses((previous) =>
+      toggleVerseSelection({
+        anchor: lastToggledRef.current,
+        availableVerses: verses.map((candidate) => candidate.verse),
+        isRangeExtend,
+        selected: previous,
+        verse,
+      }),
+    );
+    lastToggledRef.current = verse;
+    setSingleReference(null);
+  }
+
+  function clearSelection() {
+    setSelectedVerses(new Set());
+    lastToggledRef.current = null;
   }
 
   return (
     <>
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+        <p className="font-sans text-sm text-text-muted">
+          Tick verses to build a selection. Hold Shift to take a range.
+        </p>
         <Button
-          aria-pressed={listeningReference === chapterReference}
-          onClick={() => handleListen(chapterReference)}
+          onClick={() => handleListen(null)}
           size="small"
           variant="secondary"
         >
-          Listen to displayed passage
+          Listen to whole passage
         </Button>
       </div>
+
       <div className="mt-5">
         <VerseList
+          activeReference={activeReference}
           isSignedIn={isSignedIn}
-          onListen={handleListen}
+          onListen={(reference) => handleListen(reference)}
+          onToggleVerse={handleToggleVerse}
           playlists={playlists}
+          selectedVerses={selectedVerses}
           verses={verses}
         />
       </div>
-      <div className="mt-8" id="scripture-player">
+
+      {selectedVerses.size > 0 && (
+        <div className="sticky bottom-4 z-10 mt-6 flex flex-wrap items-center justify-between gap-3 rounded-control border border-border bg-surface-strong px-4 py-3 surface-strong-context">
+          <p aria-live="polite" className="font-sans text-sm font-semibold text-text-primary">
+            {selectedVerses.size} {selectedVerses.size === 1 ? "verse" : "verses"} selected
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={clearSelection} size="small" variant="ghost">
+              Clear
+            </Button>
+            <Button onClick={revealPlayer} size="small">
+              Listen to selection
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-8" id="scripture-player" ref={playerRef} tabIndex={-1}>
         <ScriptureAudioPlayer
-          key={listeningReference}
-          references={[listeningReference]}
+          onCurrentReferenceChange={setActiveReference}
+          references={references}
           title={playerTitle}
         />
       </div>

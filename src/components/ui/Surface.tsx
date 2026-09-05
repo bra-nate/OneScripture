@@ -17,7 +17,7 @@ export function Surface({
   return (
     <div
       className={classNames(
-        "rounded-[4px] border border-border",
+        "rounded-surface border border-border",
         SURFACE_VARIANTS[variant],
         className,
       )}

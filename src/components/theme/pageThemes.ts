@@ -12,11 +12,7 @@ const ROUTE_THEME_RULES: RouteThemeRule[] = [
   { matches: (pathname) => pathname.startsWith("/browse/"), theme: "browse-chapters" },
   { matches: (pathname) => pathname.startsWith("/passage/"), theme: "passage" },
   { matches: (pathname) => pathname.startsWith("/topics"), theme: "topics" },
-  { matches: (pathname) => pathname === "/dashboard", theme: "dashboard" },
-  { matches: (pathname) => pathname === "/playlist", theme: "playlists" },
-  { matches: (pathname) => pathname === "/history", theme: "history" },
-  { matches: (pathname) => pathname === "/favourites", theme: "favourites" },
-  { matches: (pathname) => pathname === "/settings", theme: "settings" },
+  { matches: (pathname) => pathname.startsWith("/playlist"), theme: "playlists" },
   { matches: (pathname) => pathname === "/login", theme: "login" },
   { matches: (pathname) => pathname === "/signup", theme: "signup" },
 ];

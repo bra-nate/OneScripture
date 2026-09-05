@@ -20,11 +20,11 @@ export function PassageSearchForm({
           : "grid w-full max-w-3xl gap-3 sm:grid-cols-[1fr_auto]"
       }
     >
-      <Field isLabelHidden label="Passage" name="q">
+      <Field isLabelHidden label="Go to a passage reference" name="q">
         <Field.Input
           defaultValue={defaultQuery}
           name="q"
-          placeholder="John 3:16 or Psalms 23"
+          placeholder="Book chapter:verse — e.g. John 3:16"
           type="search"
         />
       </Field>
@@ -34,7 +34,7 @@ export function PassageSearchForm({
         value={APP_CONFIG.DEFAULT_TRANSLATION}
       />
       <Button size="large" type="submit">
-        Search
+        Go
       </Button>
     </form>
   );

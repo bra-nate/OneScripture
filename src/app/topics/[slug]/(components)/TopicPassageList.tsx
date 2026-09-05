@@ -30,7 +30,7 @@ export function TopicPassageList({ passages }: TopicPassageListProps) {
             <p className="font-display text-2xl text-text-primary md:text-3xl">
               {passage.displayReference}
             </p>
-            <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-text-muted">
+            <p className="mt-1 font-sans text-xs uppercase tracking-label text-text-muted">
               World English Bible
             </p>
           </div>

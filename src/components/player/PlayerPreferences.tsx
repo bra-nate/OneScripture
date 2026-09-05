@@ -16,7 +16,7 @@ export function PlayerPreferences({
   return (
     <div className="grid gap-5 border-t border-border pt-5 md:grid-cols-3">
       <fieldset>
-        <legend className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <legend className="font-sans text-xs font-semibold uppercase tracking-label text-text-muted">
           Voice
         </legend>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -40,7 +40,7 @@ export function PlayerPreferences({
       </fieldset>
 
       <fieldset>
-        <legend className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <legend className="font-sans text-xs font-semibold uppercase tracking-label text-text-muted">
           Speed
         </legend>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export function PlayerPreferences({
         </div>
       </fieldset>
 
-      <label className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+      <label className="font-sans text-xs font-semibold uppercase tracking-label text-text-muted">
         Volume {Math.round(preferences.volume * 100)}%
         <input
           aria-label="Playback volume"

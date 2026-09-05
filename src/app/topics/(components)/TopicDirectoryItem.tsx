@@ -24,7 +24,7 @@ export function TopicDirectoryItem({ index, topic }: TopicDirectoryItemProps) {
               {topic.title}
             </span>
             {topic.isFeatured && (
-              <span className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              <span className="font-sans text-xs font-semibold uppercase tracking-label text-accent">
                 Featured
               </span>
             )}

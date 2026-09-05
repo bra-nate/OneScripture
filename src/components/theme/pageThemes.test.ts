@@ -11,11 +11,8 @@ describe("getPageTheme", () => {
     ["/passage/JHN/3", "passage"],
     ["/topics", "topics"],
     ["/topics/peace", "topics"],
-    ["/dashboard", "dashboard"],
     ["/playlist", "playlists"],
-    ["/history", "history"],
-    ["/favourites", "favourites"],
-    ["/settings", "settings"],
+    ["/playlist/abc", "playlists"],
     ["/login", "login"],
     ["/signup", "signup"],
   ] as const)("maps %s to %s", (pathname, theme) => {

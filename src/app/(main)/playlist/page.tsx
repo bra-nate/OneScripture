@@ -9,7 +9,7 @@ export default async function PlaylistPage() {
   return (
     <section className="mx-auto w-full max-w-5xl flex-1 px-6 py-12">
       <header className="max-w-2xl">
-        <p className="font-sans text-sm uppercase tracking-[0.2em] text-accent">
+        <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
           Your listening library
         </p>
         <h1 className="mt-3 font-display text-5xl text-text-primary">Playlists</h1>

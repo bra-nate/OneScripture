@@ -20,7 +20,7 @@ export default function BrowsePage() {
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         {groups.map((group) => (
           <section key={group.title}>
-            <h2 className="font-sans text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+            <h2 className="font-sans text-sm font-semibold uppercase tracking-eyebrow text-accent">
               {group.title}
             </h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -28,7 +28,7 @@ export default function BrowsePage() {
                 <Link
                   key={book.id}
                   href={`/browse/${book.id}`}
-                  className="rounded-md border border-border bg-surface p-4 transition-colors hover:border-accent"
+                  className="rounded-surface border border-border bg-surface p-4 transition-colors hover:border-accent"
                 >
                   <span className="block font-sans text-base font-semibold text-text-primary">
                     {book.name}

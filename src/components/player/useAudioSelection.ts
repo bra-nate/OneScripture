@@ -13,6 +13,8 @@ import {
 } from "@/components/player/types";
 
 const POLL_INTERVAL_MS = 2_000;
+/** A cold chapter can take a while to narrate, but it must not poll forever. */
+const PREPARE_TIMEOUT_MS = 120_000;
 
 export type AudioSelectionState =
   | { status: "idle" }
@@ -37,10 +39,16 @@ export function useAudioSelection(
   references: string[],
 ): UseAudioSelectionReturn {
   const requestIdRef = useRef(0);
+  const prepareStartedAtRef = useRef(0);
   const [state, setState] = useState<AudioSelectionState>({ status: "idle" });
+
+  // Changing the selection invalidates any prepared audio for the old one.
+  const referencesKey = references.join("|");
+  const referencesKeyRef = useRef(referencesKey);
 
   async function prepare(voiceId: PlaybackVoiceId) {
     const requestId = ++requestIdRef.current;
+    prepareStartedAtRef.current = Date.now();
     let selectionId: string | null = null;
     setState({ status: "preparing", selectionId: "", ready: 0, total: references.length });
     try {
@@ -80,6 +88,7 @@ export function useAudioSelection(
     }
     const selectionId = state.selectionId;
     const requestId = ++requestIdRef.current;
+    prepareStartedAtRef.current = Date.now();
     setState({ status: "preparing", selectionId, ready: 0, total: references.length });
     try {
       const selection = await retryAudioSelectionService(selectionId);
@@ -91,7 +100,25 @@ export function useAudioSelection(
   }
 
   useEffect(() => {
+    if (referencesKeyRef.current === referencesKey) return;
+    referencesKeyRef.current = referencesKey;
+    requestIdRef.current += 1;
+    setState({ status: "idle" });
+  }, [referencesKey]);
+
+  useEffect(() => {
     if (state.status !== "preparing" || !state.selectionId) return;
+
+    if (Date.now() - prepareStartedAtRef.current > PREPARE_TIMEOUT_MS) {
+      setState({
+        status: "error",
+        selectionId: state.selectionId,
+        message:
+          "Preparing this selection is taking longer than expected. The narration worker may be busy — retry in a moment.",
+      });
+      return;
+    }
+
     let isActive = true;
     const timer = window.setTimeout(async () => {
       try {

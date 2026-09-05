@@ -26,7 +26,7 @@ export function Status({
   return (
     <div
       className={classNames(
-        "grid grid-cols-[auto_1fr] gap-3 rounded-[4px] border p-4 font-sans text-sm leading-6",
+        "grid grid-cols-[auto_1fr] gap-3 rounded-surface border p-4 font-sans text-sm leading-6",
         STATUS_TONES[tone],
         className,
       )}

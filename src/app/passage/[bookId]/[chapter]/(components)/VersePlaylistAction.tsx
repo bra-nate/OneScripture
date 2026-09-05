@@ -47,7 +47,7 @@ export function VersePlaylistAction({
         Playlist for {reference}
       </label>
       <select
-        className="min-h-11 max-w-44 rounded-[4px] border border-border bg-surface px-3 font-sans text-xs text-text-primary"
+        className="min-h-11 max-w-44 rounded-control border border-border bg-surface px-3 font-sans text-xs text-text-primary"
         defaultValue={playlists[0].id}
         id={selectId}
         name="playlistId"

@@ -11,20 +11,27 @@ import { Button, Status } from "@/components/ui";
 
 export interface AudioPlayerProps {
   items: AudioSelectionItem[];
+  onCurrentReferenceChange?: (reference: string | null) => void;
   onPreferencesChange: (changes: Partial<PlaybackPreferences>) => void;
   onRefreshItems: () => Promise<AudioSelectionItem[]>;
   preferences: PlaybackPreferences;
+  /** Start as soon as the first item can play, for a play-initiated selection. */
+  shouldAutoPlay?: boolean;
 }
 
 export function AudioPlayer({
   items,
+  onCurrentReferenceChange,
   onPreferencesChange,
   onRefreshItems,
   preferences,
+  shouldAutoPlay = false,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const signedAtRef = useRef(Date.now());
-  const shouldContinueRef = useRef(false);
+  const shouldContinueRef = useRef(shouldAutoPlay);
+  const reportReferenceRef = useRef(onCurrentReferenceChange);
+  reportReferenceRef.current = onCurrentReferenceChange;
   const [playbackItems, setPlaybackItems] = useState(items);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -172,6 +179,11 @@ export function AudioPlayer({
     };
   }, [nextItem]);
 
+  const currentReference = currentItem?.reference ?? null;
+  useEffect(() => {
+    reportReferenceRef.current?.(currentReference);
+  }, [currentReference]);
+
   return (
     <div className="grid gap-5">
       <audio
@@ -193,7 +205,7 @@ export function AudioPlayer({
 
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+          <p className="font-sans text-xs font-semibold uppercase tracking-label text-accent">
             Verse {currentIndex + 1} of {playbackItems.length}
           </p>
           <p className="mt-1 font-display text-2xl text-text-primary">{currentItem.reference}</p>
@@ -203,19 +215,19 @@ export function AudioPlayer({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button aria-label="Previous verse" disabled={currentIndex === 0} onClick={() => moveWithFreshUrls(currentIndex - 1)} size="small" variant="secondary">
-            Previous
+          <Button aria-label="Previous verse" disabled={currentIndex === 0} onClick={() => moveWithFreshUrls(currentIndex - 1)} size="circle" variant="secondary">
+            <PreviousIcon />
           </Button>
           <Button aria-label={isPlaying ? "Pause scripture audio" : "Play scripture audio"} onClick={togglePlayback} size="circle">
-            {isPlaying ? "Pause" : "Play"}
+            {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </Button>
-          <Button aria-label="Next verse" disabled={currentIndex === playbackItems.length - 1} onClick={() => moveWithFreshUrls(currentIndex + 1)} size="small" variant="secondary">
-            Next
+          <Button aria-label="Next verse" disabled={currentIndex === playbackItems.length - 1} onClick={() => moveWithFreshUrls(currentIndex + 1)} size="circle" variant="secondary">
+            <NextIcon />
           </Button>
         </div>
       </div>
 
-      <input aria-label="Audio progress" aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`} className="min-h-11 w-full accent-accent" max={duration || 0} min="0" onChange={(event) => seek(event.target.value)} step="1" type="range" value={Math.min(currentTime, duration || currentTime)} />
+      <input aria-label="Audio progress" aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`} className="min-h-11 w-full accent-accent disabled:opacity-50" disabled={!duration} max={duration || 0} min="0" onChange={(event) => seek(event.target.value)} step="1" type="range" value={Math.min(currentTime, duration || currentTime)} />
 
       <div className="flex flex-wrap gap-2">
         <Button aria-pressed={preferences.mode === "once"} onClick={() => onPreferencesChange({ mode: "once" })} size="small" variant={preferences.mode === "once" ? "selected" : "secondary"}>
@@ -240,4 +252,50 @@ function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const rest = Math.floor(seconds % 60).toString().padStart(2, "0");
   return `${minutes}:${rest}`;
+}
+
+function TransportIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-5"
+      fill="currentColor"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <TransportIcon>
+      <path d="M8 5.14v13.72a1 1 0 0 0 1.53.85l10.79-6.86a1 1 0 0 0 0-1.7L9.53 4.29A1 1 0 0 0 8 5.14Z" />
+    </TransportIcon>
+  );
+}
+
+function PauseIcon() {
+  return (
+    <TransportIcon>
+      <path d="M7 4h3.5v16H7zM13.5 4H17v16h-3.5z" />
+    </TransportIcon>
+  );
+}
+
+function PreviousIcon() {
+  return (
+    <TransportIcon>
+      <path d="M7 5h2.5v14H7zM20 5.9v12.2a1 1 0 0 1-1.54.84l-9.2-6.1a1 1 0 0 1 0-1.68l9.2-6.1A1 1 0 0 1 20 5.9Z" />
+    </TransportIcon>
+  );
+}
+
+function NextIcon() {
+  return (
+    <TransportIcon>
+      <path d="M14.5 5H17v14h-2.5zM4 5.9v12.2a1 1 0 0 0 1.54.84l9.2-6.1a1 1 0 0 0 0-1.68l-9.2-6.1A1 1 0 0 0 4 5.9Z" />
+    </TransportIcon>
+  );
 }

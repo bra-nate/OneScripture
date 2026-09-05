@@ -16,7 +16,7 @@ export default async function SearchPage({
   return (
     <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-12">
       <div>
-        <h1 className="font-display text-4xl text-text-primary">Search</h1>
+        <h1 className="font-display text-4xl text-text-primary">Go to a passage</h1>
         <div className="mt-6">
           <PassageSearchForm
             defaultQuery={query}
@@ -29,16 +29,16 @@ export default async function SearchPage({
         {!query ? (
           <SearchEmptyState
             title="Start with a passage reference"
-            body="Search by book and chapter, or include a verse range."
+            body="Enter a book and chapter, optionally with a verse or range — John 3, John 3:16, or John 3:16-18. Word search across the text is not available yet."
           />
         ) : parsed ? (
           <Link
             href={`/passage/${parsed.bookId}/${parsed.chapter}?translation=${translation.id}${
               parsed.verseStart ? `&verseStart=${parsed.verseStart}` : ""
             }${parsed.verseEnd ? `&verseEnd=${parsed.verseEnd}` : ""}`}
-            className="block rounded-lg border border-border bg-surface p-6 transition-colors hover:border-accent"
+            className="block rounded-surface border border-border bg-surface p-6 transition-colors hover:border-accent"
           >
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-accent">
+            <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
               Best match
             </p>
             <h2 className="mt-3 font-display text-3xl text-text-primary">
@@ -50,8 +50,8 @@ export default async function SearchPage({
           </Link>
         ) : (
           <SearchEmptyState
-            title="No passage match"
-            body="OneScripture currently supports direct passage references such as John 3:16, Psalms 23, or Romans 8:28."
+            title="That isn't a passage reference"
+            body="This looks up references, not words. Try a book and chapter such as John 3:16, Psalms 23, or Romans 8:28 — or browse by book."
           />
         )}
       </div>

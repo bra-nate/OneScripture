@@ -25,7 +25,7 @@ export default async function TopicsPage() {
     <section className="mx-auto w-full max-w-6xl flex-1 px-6 py-16 md:py-24">
       <header className="grid gap-10 pb-16 md:grid-cols-[1fr_20rem] md:items-end">
         <div>
-          <p className="font-sans text-sm font-semibold uppercase tracking-[0.24em] text-accent">
+          <p className="font-sans text-sm font-semibold uppercase tracking-hero text-accent">
             Listen by need
           </p>
           <h1 className="mt-5 max-w-4xl font-display text-5xl leading-[0.98] text-text-primary md:text-7xl">

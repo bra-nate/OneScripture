@@ -62,7 +62,7 @@ export default async function TopicDetailPage({
         <>
           <header className="grid gap-10 py-14 md:grid-cols-[1fr_23rem] md:items-end md:py-20">
             <div>
-              <p className="font-sans text-sm font-semibold uppercase tracking-[0.24em] text-accent">
+              <p className="font-sans text-sm font-semibold uppercase tracking-hero text-accent">
                 Topical scriptures
               </p>
               <h1 className="mt-5 font-display text-6xl leading-[0.92] text-text-primary md:text-8xl">

@@ -32,7 +32,7 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: error.message };
-  redirect("/dashboard");
+  redirect("/playlist");
 }
 
 export async function signInWithOAuth(

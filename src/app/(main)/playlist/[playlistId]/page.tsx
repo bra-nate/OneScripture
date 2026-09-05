@@ -24,7 +24,7 @@ export default async function PlaylistDetailPage({
         Back to playlists
       </ButtonLink>
       <header className="mt-6 max-w-2xl">
-        <p className="font-sans text-sm uppercase tracking-[0.2em] text-accent">
+        <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
           Saved playlist
         </p>
         <h1 className="mt-3 font-display text-5xl text-text-primary">{playlist.name}</h1>

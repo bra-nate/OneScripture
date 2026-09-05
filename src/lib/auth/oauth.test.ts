@@ -13,13 +13,13 @@ describe("OAuth providers", () => {
 describe("OAuth callback URL", () => {
   test("uses localhost in development", () => {
     expect(getOAuthCallbackUrl("http://localhost:3000")).toBe(
-      "http://localhost:3000/auth/callback?next=%2Fdashboard",
+      "http://localhost:3000/auth/callback?next=%2Fplaylist",
     );
   });
 
   test("uses the configured site origin", () => {
     expect(getOAuthCallbackUrl("https://onescripture.example")).toBe(
-      "https://onescripture.example/auth/callback?next=%2Fdashboard",
+      "https://onescripture.example/auth/callback?next=%2Fplaylist",
     );
   });
 });
@@ -37,6 +37,6 @@ describe("OAuth destination", () => {
     "//example.com",
     "/\\example.com",
   ])("falls back for unsafe destination %s", (destination) => {
-    expect(getSafeAuthDestination(destination)).toBe("/dashboard");
+    expect(getSafeAuthDestination(destination)).toBe("/playlist");
   });
 });

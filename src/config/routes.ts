@@ -4,12 +4,10 @@ export const routes = {
   home: "/",
   search: "/search",
   browse: "/browse",
-  dashboard: "/dashboard",
   playlists: {
     index: "/playlist",
     detail: (playlistId: string) => `/playlist/${encodeURIComponent(playlistId)}`,
   },
-  settings: "/settings",
   login: "/login",
   signup: "/signup",
   topics: {

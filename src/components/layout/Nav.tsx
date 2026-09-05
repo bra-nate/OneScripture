@@ -31,25 +31,13 @@ export async function Nav() {
         {user ? (
           <>
             <Link
-              href={routes.dashboard}
-              className="transition-colors hover:text-accent"
-            >
-              Dashboard
-            </Link>
-            <Link
               href={routes.playlists.index}
               className="transition-colors hover:text-accent"
             >
               Playlists
             </Link>
-            <Link
-              href={routes.settings}
-              className="transition-colors hover:text-accent"
-            >
-              Settings
-            </Link>
             <form action={signOut}>
-              <Button className="min-h-0 p-0 uppercase tracking-wide" size="small" type="submit" variant="ghost">
+              <Button className="-mx-3 uppercase tracking-wide" size="small" type="submit" variant="ghost">
                 Sign Out
               </Button>
             </form>

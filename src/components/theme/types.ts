@@ -5,11 +5,7 @@ export const PAGE_THEMES = [
   "browse-chapters",
   "passage",
   "topics",
-  "dashboard",
   "playlists",
-  "history",
-  "favourites",
-  "settings",
   "login",
   "signup",
 ] as const;

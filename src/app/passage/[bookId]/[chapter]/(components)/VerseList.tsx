@@ -1,61 +1,93 @@
 import { VersePlaylistAction } from "@/app/passage/[bookId]/[chapter]/(components)/VersePlaylistAction";
 import { Button } from "@/components/ui";
+import { classNames } from "@/components/ui/classNames";
 import { getBook } from "@/lib/bible/reference";
 import { type PlaylistSummary } from "@/lib/playlists/types";
 import { type ScriptureVerse } from "@/lib/scripture/types";
 
 export interface VerseListProps {
+  activeReference: string | null;
   isSignedIn: boolean;
   onListen: (reference: string) => void;
+  onToggleVerse: (verse: number, isRangeExtend: boolean) => void;
   playlists: PlaylistSummary[];
+  selectedVerses: ReadonlySet<number>;
   verses: ScriptureVerse[];
 }
 
-export function VerseList({ isSignedIn, onListen, playlists, verses }: VerseListProps) {
+export function VerseList({
+  activeReference,
+  isSignedIn,
+  onListen,
+  onToggleVerse,
+  playlists,
+  selectedVerses,
+  verses,
+}: VerseListProps) {
   return (
-    <ol className="space-y-5" aria-label="Scripture verses">
-      {verses.map((verse) => (
-        <li
-          id={`verse-${verse.verse}`}
-          key={verse.id}
-          className="grid grid-cols-[2rem_1fr] gap-3 border-b border-border pb-5 last:border-b-0"
-        >
-          <span
-            aria-hidden="true"
-            className="pt-1 font-sans text-xs font-semibold text-accent"
+    <ol className="space-y-1" aria-label="Scripture verses">
+      {verses.map((verse) => {
+        const reference = formatVerseReference(verse);
+        const isActive = activeReference === reference;
+        const isSelected = selectedVerses.has(verse.verse);
+
+        return (
+          <li
+            aria-current={isActive ? "true" : undefined}
+            id={`verse-${verse.verse}`}
+            key={verse.id}
+            className={classNames(
+              "grid grid-cols-[auto_1.75rem_1fr] gap-3 border-b border-border px-3 py-4 transition-colors last:border-b-0",
+              isActive && "rounded-control bg-highlight",
+            )}
           >
-            {verse.verse}
-          </span>
-          <div>
-            <p className="font-serif text-lg leading-8 text-text-primary">
-              {verse.text || (
-                <span className="italic text-text-muted">
-                  Text not present in this edition.
-                </span>
+            <input
+              aria-label={`Select ${reference}`}
+              checked={isSelected}
+              className="mt-1.5 size-4 accent-accent"
+              onChange={() => undefined}
+              onClick={(event) => onToggleVerse(verse.verse, event.shiftKey)}
+              type="checkbox"
+            />
+            <span
+              className={classNames(
+                "pt-1 font-sans text-xs font-semibold",
+                isActive ? "text-text-primary" : "text-accent",
               )}
-            </p>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Button
-                aria-label={`Listen to ${formatVerseReference(verse)}`}
-                onClick={() => onListen(formatVerseReference(verse))}
-                size="small"
-                variant="secondary"
-              >
-                Listen to verse
-              </Button>
-              <VersePlaylistAction
-                isSignedIn={isSignedIn}
-                playlists={playlists}
-                reference={formatVerseReference(verse)}
-              />
+            >
+              {verse.verse}
+            </span>
+            <div>
+              <p className="font-display text-lg leading-8 text-text-primary">
+                {verse.text || (
+                  <span className="italic text-text-muted">
+                    Text not present in this edition.
+                  </span>
+                )}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button
+                  aria-label={`Listen to ${reference}`}
+                  onClick={() => onListen(reference)}
+                  size="small"
+                  variant={isActive ? "selected" : "secondary"}
+                >
+                  {isActive ? "Now playing" : "Listen to verse"}
+                </Button>
+                <VersePlaylistAction
+                  isSignedIn={isSignedIn}
+                  playlists={playlists}
+                  reference={reference}
+                />
+              </div>
             </div>
-          </div>
-        </li>
-      ))}
+          </li>
+        );
+      })}
     </ol>
   );
 }
 
-function formatVerseReference(verse: ScriptureVerse): string {
+export function formatVerseReference(verse: ScriptureVerse): string {
   return `${getBook(verse.bookId)?.name ?? verse.bookId} ${verse.chapter}:${verse.verse}`;
 }

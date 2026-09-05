@@ -2,7 +2,7 @@ export const OAUTH_PROVIDERS = ["google", "apple"] as const;
 
 export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
-const DEFAULT_AUTH_DESTINATION = "/dashboard";
+const DEFAULT_AUTH_DESTINATION = "/playlist";
 const LOCAL_SITE_URL = "http://localhost:3000";
 
 export function isOAuthProvider(value: string): value is OAuthProvider {
