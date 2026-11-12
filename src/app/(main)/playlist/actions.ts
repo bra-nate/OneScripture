@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { routes } from "@/config/routes";
 import { formatDisplayRef, serializePassageRef } from "@/lib/bible/reference";
+import { getTranslation } from "@/lib/bible/translations";
 import {
   getNextPlaylistPosition,
   hasPlaylistVerse,
@@ -40,11 +41,13 @@ export async function createPlaylist(
 
 export async function addVerseToPlaylist(
   referenceValue: string,
+  translationValue: string,
   _state: PlaylistActionState,
   formData: FormData,
 ): Promise<PlaylistActionState> {
   const playlistId = String(formData.get("playlistId") ?? "");
   const reference = parseSingleVerseReference(referenceValue);
+  const translation = getTranslation(translationValue);
   if (!reference || !playlistId) {
     return { message: "Choose a valid playlist and verse.", status: "error" };
   }
@@ -82,7 +85,14 @@ export async function addVerseToPlaylist(
     translationId: item.translation_id,
     verse: item.verse_start,
   }));
-  if (hasPlaylistVerse(items, reference, "WEB")) {
+  const existingTranslation = items[0]?.translationId;
+  if (existingTranslation && existingTranslation !== translation.id) {
+    return {
+      message: `This playlist uses ${existingTranslation}. Choose a ${translation.id} playlist or create a new one.`,
+      status: "error",
+    };
+  }
+  if (hasPlaylistVerse(items, reference, translation.id)) {
     return { message: "This verse is already in that playlist.", status: "error" };
   }
   if (items.length >= MAX_SELECTION_VERSES) {
@@ -97,8 +107,8 @@ export async function addVerseToPlaylist(
     chapter: reference.chapter,
     verse_start: reference.verseStart,
     verse_end: null,
-    translation_id: "WEB",
-    display_ref: formatDisplayRef(reference, "WEB"),
+    translation_id: translation.id,
+    display_ref: formatDisplayRef(reference, translation.id),
     order: getNextPlaylistPosition(items),
   });
   if (error?.code === "23505") {

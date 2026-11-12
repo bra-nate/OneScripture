@@ -23,6 +23,16 @@ describe("Selection API contract", () => {
     });
   });
 
+  it.each(["WEB", "KJV", "ASV"])("accepts %s for generated audio", (translationId) => {
+    expect(
+      parseCreateSelectionRequest({
+        translationId,
+        voiceId: "af_heart",
+        references: ["John 3:16"],
+      }).translationId,
+    ).toBe(translationId);
+  });
+
   const invalidRequests: Array<[unknown, SelectionRequestErrorCode]> = [
     [{ voiceId: "af_heart", references: ["John 3:16"] }, "unsupported_translation"],
     [

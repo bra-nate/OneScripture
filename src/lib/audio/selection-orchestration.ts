@@ -1,6 +1,7 @@
 import {
   buildSelectionHash,
   type CreateSelectionResponse,
+  type SelectionTranslationId,
   type SelectionVoiceId,
 } from "@/lib/audio/selection-contract";
 
@@ -25,7 +26,7 @@ export class SelectionServiceError extends Error {
 
 export interface CanonicalSelectionInput {
   userId: string | null;
-  translationCode: "WEB";
+  translationCode: SelectionTranslationId;
   translationId: string;
   voiceId: SelectionVoiceId;
   verses: Array<{

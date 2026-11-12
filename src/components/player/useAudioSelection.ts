@@ -11,6 +11,7 @@ import {
   type AudioSelectionItem,
   type PlaybackVoiceId,
 } from "@/components/player/types";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 
 const POLL_INTERVAL_MS = 2_000;
 /** A cold chapter can take a while to narrate, but it must not poll forever. */
@@ -37,13 +38,14 @@ export interface UseAudioSelectionReturn {
 
 export function useAudioSelection(
   references: string[],
+  translationId: SelectionTranslationId,
 ): UseAudioSelectionReturn {
   const requestIdRef = useRef(0);
   const prepareStartedAtRef = useRef(0);
   const [state, setState] = useState<AudioSelectionState>({ status: "idle" });
 
   // Changing the selection invalidates any prepared audio for the old one.
-  const referencesKey = references.join("|");
+  const referencesKey = `${translationId}:${references.join("|")}`;
   const referencesKeyRef = useRef(referencesKey);
 
   async function prepare(voiceId: PlaybackVoiceId) {
@@ -52,7 +54,7 @@ export function useAudioSelection(
     let selectionId: string | null = null;
     setState({ status: "preparing", selectionId: "", ready: 0, total: references.length });
     try {
-      const summary = await createAudioSelectionService(references, voiceId);
+      const summary = await createAudioSelectionService(references, translationId, voiceId);
       selectionId = summary.selectionId;
       if (requestId !== requestIdRef.current) return;
       const selection = await getAudioSelectionService(summary.selectionId);
@@ -104,7 +106,7 @@ export function useAudioSelection(
     referencesKeyRef.current = referencesKey;
     requestIdRef.current += 1;
     setState({ status: "idle" });
-  }, [referencesKey]);
+  }, [referencesKey, translationId]);
 
   useEffect(() => {
     if (state.status !== "preparing" || !state.selectionId) return;

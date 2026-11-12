@@ -4,9 +4,23 @@ import { type PassageRef } from "@/lib/bible/reference";
 import { normalizeScriptureSelection } from "@/lib/scripture/selections";
 import { type CanonicalPassage } from "@/lib/scripture/types";
 
-const EXPECTED_VERSE_COUNT = 31_103;
-const EXPECTED_SOURCE_SHA256 =
-  "f08d13b4f0701108f7b9f95d57c201649f37c36359f707c8cf1876538a84d750";
+const EXPECTED_TRANSLATIONS = {
+  WEB: {
+    count: 31_103,
+    hash: "f08d13b4f0701108f7b9f95d57c201649f37c36359f707c8cf1876538a84d750",
+    name: "World English Bible",
+  },
+  KJV: {
+    count: 31_102,
+    hash: "ee4cae32cddded36d9dfcb524c70c03dcf930cf04924ca34c9b805bac39210d4",
+    name: "King James Version",
+  },
+  ASV: {
+    count: 31_102,
+    hash: "6c41b8020cba9cf7041689f2356c55859e28023405537388be08bad93df2b050",
+    name: "American Standard Version",
+  },
+} as const;
 
 interface TranslationRow {
   id: string;
@@ -57,6 +71,13 @@ function requireEnvironment(name: string): string {
 }
 
 async function main(): Promise<void> {
+  const requestedCode = process.argv
+    .find((argument) => argument.startsWith("--translation="))
+    ?.split("=", 2)[1]
+    ?.toUpperCase() as keyof typeof EXPECTED_TRANSLATIONS | undefined;
+  const code = requestedCode ?? "WEB";
+  const expected = EXPECTED_TRANSLATIONS[code];
+  if (!expected) throw new Error("Choose --translation=WEB, KJV, or ASV");
   const supabase = createClient<ScriptureDatabase>(
     requireEnvironment("NEXT_PUBLIC_SUPABASE_URL"),
     requireEnvironment("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
@@ -68,32 +89,32 @@ async function main(): Promise<void> {
     .select(
       "id, code, source_artifact_sha256, can_display_text, can_generate_audio, can_stream_audio",
     )
-    .eq("code", "WEB")
+    .eq("code", code)
     .single<TranslationRow>();
 
   if (translationError || !translation) {
     throw new Error(
-      `WEB translation is unavailable: ${translationError?.message ?? "missing row"}`,
+      `${code} translation is unavailable: ${translationError?.message ?? "missing row"}`,
     );
   }
-  if (translation.source_artifact_sha256 !== EXPECTED_SOURCE_SHA256) {
-    throw new Error("WEB source artifact hash does not match the approved pin");
+  if (translation.source_artifact_sha256 !== expected.hash) {
+    throw new Error(`${code} source artifact hash does not match the approved pin`);
   }
   if (
     !translation.can_display_text ||
     !translation.can_generate_audio ||
     !translation.can_stream_audio
   ) {
-    throw new Error("WEB capability flags are incomplete");
+    throw new Error(`${code} capability flags are incomplete`);
   }
 
   const { count, error: countError } = await supabase
     .from("scripture_verses")
     .select("id", { count: "exact", head: true })
     .eq("translation_id", translation.id);
-  if (countError || count !== EXPECTED_VERSE_COUNT) {
+  if (countError || count !== expected.count) {
     throw new Error(
-      `Expected ${EXPECTED_VERSE_COUNT} public WEB verses, received ${count ?? "unknown"}`,
+      `Expected ${expected.count} public ${code} verses, received ${count ?? "unknown"}`,
     );
   }
 
@@ -105,8 +126,8 @@ async function main(): Promise<void> {
 
   const selection = await normalizeScriptureSelection(
     ["John 3:16-17", "Psalms 23:1", "John 3:17"],
-    "WEB",
-    createPassageResolver(supabase, translation.id),
+    code,
+    createPassageResolver(supabase, translation.id, code, expected.name),
   );
   const orderedReferences = selection.verses.map(
     (verse) => `${verse.bookId} ${verse.chapter}:${verse.verse}`,
@@ -118,8 +139,8 @@ async function main(): Promise<void> {
     );
   }
 
-  console.log("Verified WEB translation rights and source pin.");
-  console.log(`Verified ${EXPECTED_VERSE_COUNT} public canonical verses.`);
+  console.log(`Verified ${code} translation rights and source pin.`);
+  console.log(`Verified ${expected.count} public canonical verses.`);
   console.log("Verified chapter, single-verse, range, and missing-reference reads.");
   console.log("Verified ordered multi-reference normalization and duplicate removal.");
 }
@@ -127,6 +148,8 @@ async function main(): Promise<void> {
 function createPassageResolver(
   supabase: SupabaseClient<ScriptureDatabase>,
   translationId: string,
+  translationCode: string,
+  translationName: string,
 ) {
   return async (reference: PassageRef): Promise<CanonicalPassage> => {
     let query = supabase
@@ -155,8 +178,8 @@ function createPassageResolver(
       reference,
       translation: {
         id: translationId,
-        code: "WEB",
-        name: "World English Bible",
+        code: translationCode,
+        name: translationName,
         languageCode: "eng",
         sourceName: "eBible.org",
         sourceVersion: "2020 stable text edition",

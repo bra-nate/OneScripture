@@ -6,6 +6,7 @@ import { ScriptureAudioPlayer } from "@/components/player";
 import { ButtonLink, Status, Surface } from "@/components/ui";
 import { routes } from "@/config/routes";
 import { serializePassageRef } from "@/lib/bible/reference";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 import { getOwnedPlaylistDetail } from "@/lib/playlists/catalogue";
 import { getPlaylistErrorPresentation, type PlaylistErrorPresentation } from "@/lib/playlists/errors";
 import { type PlaylistDetail } from "@/lib/playlists/types";
@@ -68,7 +69,11 @@ export default async function PlaylistDetailPage({
       )}
 
       <div className="mt-8">
-        <ScriptureAudioPlayer references={references} title={playlist.name} />
+        <ScriptureAudioPlayer
+          references={references}
+          title={playlist.name}
+          translationCode={(playlist.items[0]?.translationId ?? "WEB") as SelectionTranslationId}
+        />
       </div>
 
       <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
@@ -90,7 +95,7 @@ export default async function PlaylistDetailPage({
             return (
               <li key={item.id}>
                 <Surface className="flex flex-wrap items-center justify-between gap-4 p-4">
-                  <ButtonLink href={routes.passage(item.reference)} variant="ghost">
+                  <ButtonLink href={routes.passage(item.reference, item.translationId)} variant="ghost">
                     {item.displayReference}
                   </ButtonLink>
                   <PlaylistItemRemoveForm itemId={item.id} playlistId={playlist.id} />

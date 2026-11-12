@@ -9,6 +9,8 @@ import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
 import { Status } from "@/components/ui";
 import { APP_CONFIG } from "@/config/app";
 import { formatDisplayRef, getBook, serializePassageRef, type PassageRef } from "@/lib/bible/reference";
+import { getTranslation, TRANSLATIONS } from "@/lib/bible/translations";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 import { getOwnedPlaylistSummaries } from "@/lib/playlists/catalogue";
 import { getPlaylistErrorPresentation } from "@/lib/playlists/errors";
 import { type PlaylistSummary } from "@/lib/playlists/types";
@@ -29,6 +31,9 @@ export async function generateMetadata({
   const query = await searchParams;
   const book = getBook(bookId);
   const chapter = Number(chapterParam);
+  const translation = getTranslation(
+    typeof query.translation === "string" ? query.translation : null,
+  );
   if (!book || !Number.isInteger(chapter) || chapter < 1 || chapter > book.chapters) {
     return {};
   }
@@ -40,15 +45,15 @@ export async function generateMetadata({
       verseStart: parsePassageQueryNumber(query.verseStart),
       verseEnd: parsePassageQueryNumber(query.verseEnd),
     },
-    "WEB",
+    translation.id,
   );
 
   return {
     title: displayReference,
-    description: `Read and listen to ${displayReference} from the World English Bible.`,
+    description: `Read and listen to ${displayReference} from the ${translation.label}.`,
     openGraph: {
       title: `${displayReference} · ${APP_CONFIG.NAME}`,
-      description: `Read and listen to ${displayReference} from the World English Bible.`,
+      description: `Read and listen to ${displayReference} from the ${translation.label}.`,
     },
   };
 }
@@ -61,6 +66,9 @@ export default async function PassagePage({
   const query = await searchParams;
   const book = getBook(bookId);
   const chapter = Number(chapterParam);
+  const translation = getTranslation(
+    typeof query.translation === "string" ? query.translation : null,
+  );
 
   if (!book || !Number.isInteger(chapter) || chapter < 1 || chapter > book.chapters) {
     notFound();
@@ -72,7 +80,7 @@ export default async function PassagePage({
     verseStart: parsePassageQueryNumber(query.verseStart),
     verseEnd: parsePassageQueryNumber(query.verseEnd),
   };
-  const displayReference = formatDisplayRef(reference, "WEB");
+  const displayReference = formatDisplayRef(reference, translation.id);
   let passage: CanonicalPassage | null = null;
   let catalogueError: ScriptureErrorPresentation | null = null;
 
@@ -91,7 +99,7 @@ export default async function PassagePage({
   }
 
   try {
-    passage = await getCanonicalPassage(reference);
+    passage = await getCanonicalPassage(reference, translation.id);
   } catch (error) {
     if (
       error instanceof ScriptureError &&
@@ -112,7 +120,7 @@ export default async function PassagePage({
     >
       <div>
         <Link
-          href={`/browse/${book.id}`}
+          href={`/browse/${book.id}?translation=${translation.id}`}
           className="editorial-link font-sans text-sm font-medium text-text-primary underline"
         >
           Back to {book.name}
@@ -120,15 +128,43 @@ export default async function PassagePage({
 
         <header className="mt-6">
           <p className="editorial-kicker">
-            World English Bible
+            {translation.label}
           </p>
           <h1 className="page-heading mt-5 text-text-primary">
             {displayReference}
           </h1>
           <p className="mt-4 max-w-2xl font-sans leading-7 text-text-muted">
-            Canonical public-domain text from eBible.org, preserved verse by
-            verse for reusable narration and ordered playback.
+            Public-domain text from eBible.org, preserved verse by verse for
+            reusable narration and ordered playback.
           </p>
+          <form className="mt-6 flex flex-wrap items-end gap-3" method="get">
+            <div>
+              <label className="mb-2 block font-sans text-xs font-semibold uppercase tracking-[0.12em] text-text-muted" htmlFor="translation">
+                Translation
+              </label>
+              <select
+                className="min-h-11 rounded-control border border-border bg-surface px-3 font-sans text-sm text-text-primary"
+                defaultValue={translation.id}
+                id="translation"
+                name="translation"
+              >
+                {TRANSLATIONS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.id} — {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {reference.verseStart !== null && (
+              <input name="verseStart" type="hidden" value={reference.verseStart} />
+            )}
+            {reference.verseEnd !== null && (
+              <input name="verseEnd" type="hidden" value={reference.verseEnd} />
+            )}
+            <button className="min-h-11 rounded-control bg-text-primary px-4 font-sans text-sm font-semibold text-background" type="submit">
+              Change
+            </button>
+          </form>
         </header>
 
         {catalogueError ? (
@@ -146,6 +182,7 @@ export default async function PassagePage({
               isSignedIn={Boolean(user)}
               playlistErrorMessage={playlistErrorMessage}
               playlists={playlists}
+              translationCode={translation.id as SelectionTranslationId}
               verses={passage.verses}
             />
           )

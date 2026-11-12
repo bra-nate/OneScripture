@@ -4,6 +4,7 @@ import {
   type AudioSelectionStatus,
   type PlaybackVoiceId,
 } from "@/components/player/types";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 
 interface AudioSelectionSummary {
   selectionId: string;
@@ -21,12 +22,13 @@ export class AudioSelectionClientError extends Error {
 
 export async function createAudioSelectionService(
   references: string[],
+  translationId: SelectionTranslationId,
   voiceId: PlaybackVoiceId,
 ): Promise<AudioSelectionSummary> {
   const response = await fetch("/api/audio/selections", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ references, translationId: "WEB", voiceId }),
+    body: JSON.stringify({ references, translationId, voiceId }),
   });
   return parseSelectionSummary(response);
 }

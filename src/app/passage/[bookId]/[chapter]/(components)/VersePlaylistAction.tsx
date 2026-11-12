@@ -11,14 +11,16 @@ export interface VersePlaylistActionProps {
   isSignedIn: boolean;
   playlists: PlaylistSummary[];
   reference: string;
+  translationCode: string;
 }
 
 export function VersePlaylistAction({
   isSignedIn,
   playlists,
   reference,
+  translationCode,
 }: VersePlaylistActionProps) {
-  const action = addVerseToPlaylist.bind(null, reference);
+  const action = addVerseToPlaylist.bind(null, reference, translationCode);
   const [state, formAction, isPending] = useActionState(
     action,
     INITIAL_PLAYLIST_ACTION_STATE,

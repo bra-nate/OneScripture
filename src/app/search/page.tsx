@@ -10,7 +10,9 @@ export default async function SearchPage({
 }: PageProps<"/search">) {
   const params = await searchParams;
   const query = typeof params.q === "string" ? params.q : "";
-  const translation = getTranslation();
+  const translation = getTranslation(
+    typeof params.translation === "string" ? params.translation : null,
+  );
   const parsed = parseReference(query);
 
   return (
@@ -21,6 +23,7 @@ export default async function SearchPage({
         <div className="mt-8 rounded-surface bg-surface p-5 md:p-7">
           <PassageSearchForm
             defaultQuery={query}
+            defaultTranslation={translation.id}
             compact
           />
         </div>
@@ -46,7 +49,7 @@ export default async function SearchPage({
               {formatDisplayRef(parsed, translation.id.replace(/^ENG/, ""))}
             </h2>
             <p className="mt-3 font-sans text-sm text-text-muted">
-              Read the canonical passage from the World English Bible.
+              Read the canonical passage from the {translation.label}.
             </p>
           </Link>
         ) : (

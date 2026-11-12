@@ -8,20 +8,26 @@ import { type PlaybackPreferences } from "@/components/player/types";
 import { useAudioSelection } from "@/components/player/useAudioSelection";
 import { usePlaybackPreferences } from "@/components/player/usePlaybackPreferences";
 import { Button, Status, Surface } from "@/components/ui";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 
 export interface ScriptureAudioPlayerProps {
   onCurrentReferenceChange?: (reference: string | null) => void;
   references: string[];
   title?: string;
+  translationCode: SelectionTranslationId;
 }
 
 export function ScriptureAudioPlayer({
   onCurrentReferenceChange,
   references,
   title = "Scripture audio",
+  translationCode,
 }: ScriptureAudioPlayerProps) {
   const { preferences, updatePreferences } = usePlaybackPreferences();
-  const { prepare, refreshItems, retry, state } = useAudioSelection(references);
+  const { prepare, refreshItems, retry, state } = useAudioSelection(
+    references,
+    translationCode,
+  );
   const [didRequestPlayback, setDidRequestPlayback] = useState(false);
 
   function handleListen() {

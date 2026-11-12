@@ -13,6 +13,7 @@ export interface VerseListProps {
   onToggleVerse: (verse: number, isRangeExtend: boolean) => void;
   playlists: PlaylistSummary[];
   selectedVerses: ReadonlySet<number>;
+  translationCode: string;
   verses: ScriptureVerse[];
 }
 
@@ -24,6 +25,7 @@ export function VerseList({
   onToggleVerse,
   playlists,
   selectedVerses,
+  translationCode,
   verses,
 }: VerseListProps) {
   return (
@@ -81,6 +83,7 @@ export function VerseList({
                     isSignedIn={isSignedIn}
                     playlists={playlists}
                     reference={reference}
+                    translationCode={translationCode}
                   />
                 )}
               </div>

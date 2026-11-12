@@ -11,6 +11,7 @@ import { ScriptureAudioPlayer } from "@/components/player";
 import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
 import { Button, Status } from "@/components/ui";
 import { type PlaylistSummary } from "@/lib/playlists/types";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 import { type ScriptureVerse } from "@/lib/scripture/types";
 
 export interface ChapterReaderProps {
@@ -19,6 +20,7 @@ export interface ChapterReaderProps {
   isSignedIn: boolean;
   playlistErrorMessage: string | null;
   playlists: PlaylistSummary[];
+  translationCode: SelectionTranslationId;
   verses: ScriptureVerse[];
 }
 
@@ -28,6 +30,7 @@ export function ChapterReader({
   isSignedIn,
   playlistErrorMessage,
   playlists,
+  translationCode,
   verses,
 }: ChapterReaderProps) {
   const playerRef = useRef<HTMLDivElement>(null);
@@ -49,7 +52,7 @@ export function ChapterReader({
     selectedVerses.size > 0
       ? `${selectedVerses.size} selected ${selectedVerses.size === 1 ? "verse" : "verses"}`
       : singleReference
-        ? `${singleReference} · WEB`
+        ? `${singleReference} · ${translationCode}`
         : displayReference;
 
   function revealPlayer() {
@@ -123,6 +126,7 @@ export function ChapterReader({
           onToggleVerse={handleToggleVerse}
           arePlaylistsAvailable={!playlistErrorMessage}
           playlists={playlists}
+          translationCode={translationCode}
           selectedVerses={selectedVerses}
           verses={verses}
         />
@@ -149,6 +153,7 @@ export function ChapterReader({
           onCurrentReferenceChange={setActiveReference}
           references={references}
           title={playerTitle}
+          translationCode={translationCode}
         />
       </div>
     </>

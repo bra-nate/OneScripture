@@ -1,10 +1,11 @@
 import { createHash } from "node:crypto";
 
-export const SELECTION_API_TRANSLATION = "WEB";
+export const SELECTION_API_TRANSLATIONS = ["WEB", "KJV", "ASV"] as const;
 export const SELECTION_API_VOICES = ["af_heart", "am_michael"] as const;
 export const MAX_SELECTION_REFERENCES = 20;
 
 export type SelectionVoiceId = (typeof SELECTION_API_VOICES)[number];
+export type SelectionTranslationId = (typeof SELECTION_API_TRANSLATIONS)[number];
 
 export type SelectionRequestErrorCode =
   | "invalid_request"
@@ -22,7 +23,7 @@ export class SelectionRequestError extends Error {
 }
 
 export interface CreateSelectionRequest {
-  translationId: typeof SELECTION_API_TRANSLATION;
+  translationId: SelectionTranslationId;
   voiceId: SelectionVoiceId;
   references: string[];
 }
@@ -59,10 +60,10 @@ export function parseCreateSelectionRequest(
     typeof value.translationId === "string"
       ? value.translationId.trim().toUpperCase()
       : "";
-  if (translationId !== SELECTION_API_TRANSLATION) {
+  if (!isSelectionTranslationId(translationId)) {
     throw new SelectionRequestError(
       "unsupported_translation",
-      `Only ${SELECTION_API_TRANSLATION} is available for audio generation.`,
+      `Choose one of these audio translations: ${SELECTION_API_TRANSLATIONS.join(", ")}.`,
     );
   }
 
@@ -102,7 +103,7 @@ export function parseCreateSelectionRequest(
   });
 
   return {
-    translationId: SELECTION_API_TRANSLATION,
+    translationId,
     voiceId,
     references,
   };
@@ -133,6 +134,10 @@ export function buildSelectionHash(input: {
 
 function isSelectionVoiceId(value: string): value is SelectionVoiceId {
   return (SELECTION_API_VOICES as readonly string[]).includes(value);
+}
+
+function isSelectionTranslationId(value: string): value is SelectionTranslationId {
+  return (SELECTION_API_TRANSLATIONS as readonly string[]).includes(value);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

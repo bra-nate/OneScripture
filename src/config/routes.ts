@@ -16,16 +16,17 @@ export const routes = {
     index: "/topics",
     detail: (slug: string) => `/topics/${encodeURIComponent(slug)}`,
   },
-  passage: (reference: PassageRef) => {
+  passage: (reference: PassageRef, translation?: string) => {
     const pathname = `/passage/${reference.bookId}/${reference.chapter}`;
-    if (reference.verseStart === null) return pathname;
-
-    const search = new URLSearchParams({
-      verseStart: String(reference.verseStart),
-    });
+    const search = new URLSearchParams();
+    if (translation) search.set("translation", translation);
+    if (reference.verseStart !== null) {
+      search.set("verseStart", String(reference.verseStart));
+    }
     if (reference.verseEnd !== null) {
       search.set("verseEnd", String(reference.verseEnd));
     }
-    return `${pathname}?${search.toString()}`;
+    const query = search.toString();
+    return query ? `${pathname}?${query}` : pathname;
   },
 } as const;

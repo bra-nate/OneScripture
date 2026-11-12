@@ -6,5 +6,11 @@ export interface TopicPlaybackPreviewProps {
 }
 
 export function TopicPlaybackPreview({ references, title }: TopicPlaybackPreviewProps) {
-  return <ScriptureAudioPlayer references={references} title={`${title} listening`} />;
+  return (
+    <ScriptureAudioPlayer
+      references={references}
+      title={`${title} listening`}
+      translationCode="WEB"
+    />
+  );
 }

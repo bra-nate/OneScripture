@@ -28,7 +28,7 @@ describe("audio selection client", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(
-      createAudioSelectionService(references, "af_heart"),
+      createAudioSelectionService(references, "KJV", "af_heart"),
     ).resolves.toMatchObject({
       selectionId: "selection-id",
       total: references.length,
@@ -38,7 +38,7 @@ describe("audio selection client", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         references,
-        translationId: "WEB",
+        translationId: "KJV",
         voiceId: "af_heart",
       }),
     });
@@ -79,7 +79,7 @@ describe("audio selection client", () => {
       ),
     );
     await expect(
-      createAudioSelectionService(["John 3:16"], "af_heart"),
+      createAudioSelectionService(["John 3:16"], "WEB", "af_heart"),
     ).rejects.toEqual(new AudioSelectionClientError("Try again shortly."));
   });
 });

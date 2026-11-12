@@ -7,16 +7,71 @@ import { createClient } from "@supabase/supabase-js";
 
 import { BIBLE_BOOKS } from "@/lib/bible/reference";
 
-const ARCHIVE_PATH = path.resolve(
-  process.cwd(),
-  ".cache/scripture-sources/engwebp_vpl.zip",
-);
-const ARCHIVE_ENTRY = "engwebp_vpl.txt";
-const ARCHIVE_SHA256 =
-  "f08d13b4f0701108f7b9f95d57c201649f37c36359f707c8cf1876538a84d750";
-const EXPECTED_VERSE_COUNT = 31_103;
-const EXPECTED_EMPTY_VERSE_COUNT = 5;
 const IMPORT_BATCH_SIZE = 500;
+
+interface TranslationSource {
+  archiveEntry: string;
+  archiveName: string;
+  archiveSha256: string;
+  attribution: string;
+  code: "ASV" | "KJV" | "WEB";
+  expectedEmptyVerseCount: number;
+  expectedVerseCount: number;
+  name: string;
+  rightsUrl: string;
+  sourceId: string;
+  sourcePublishedAt: string | null;
+  sourceUrl: string;
+  sourceVersion: string;
+}
+
+const TRANSLATION_SOURCES: Readonly<Record<TranslationSource["code"], TranslationSource>> = {
+  WEB: {
+    archiveEntry: "engwebp_vpl.txt",
+    archiveName: "engwebp_vpl.zip",
+    archiveSha256: "f08d13b4f0701108f7b9f95d57c201649f37c36359f707c8cf1876538a84d750",
+    attribution: "World English Bible — Public Domain; source: eBible.org",
+    code: "WEB",
+    expectedEmptyVerseCount: 5,
+    expectedVerseCount: 31_103,
+    name: "World English Bible",
+    rightsUrl: "https://ebible.org/engwebp/copyright.htm",
+    sourceId: "engwebp",
+    sourcePublishedAt: "2026-08-26",
+    sourceUrl: "https://ebible.org/engwebp/",
+    sourceVersion: "2020 stable text edition",
+  },
+  KJV: {
+    archiveEntry: "eng-kjv2006_vpl.txt",
+    archiveName: "eng-kjv2006_vpl.zip",
+    archiveSha256: "ee4cae32cddded36d9dfcb524c70c03dcf930cf04924ca34c9b805bac39210d4",
+    attribution: "King James Version — Public Domain outside the United Kingdom; source: eBible.org",
+    code: "KJV",
+    expectedEmptyVerseCount: 0,
+    expectedVerseCount: 31_102,
+    name: "King James Version",
+    rightsUrl: "https://ebible.org/find/details.php?id=eng-kjv2006",
+    sourceId: "eng-kjv2006",
+    sourcePublishedAt: null,
+    sourceUrl: "https://ebible.org/eng-kjv2006/",
+    sourceVersion: "2017 eBible edition",
+  },
+  ASV: {
+    archiveEntry: "eng-asv_vpl.txt",
+    archiveName: "eng-asv_vpl.zip",
+    archiveSha256: "6c41b8020cba9cf7041689f2356c55859e28023405537388be08bad93df2b050",
+    attribution: "American Standard Version — Public Domain; source: eBible.org",
+    code: "ASV",
+    expectedEmptyVerseCount: 16,
+    expectedVerseCount: 31_102,
+    name: "American Standard Version",
+    rightsUrl: "https://ebible.org/find/details.php?id=eng-asv",
+    sourceId: "eng-asv",
+    sourcePublishedAt: null,
+    sourceUrl: "https://ebible.org/eng-asv/",
+    sourceVersion: "1901 edition",
+  },
+};
 
 const SOURCE_BOOK_ID_MAP: Readonly<Record<string, string>> = {
   SOL: "SNG",
@@ -44,16 +99,20 @@ function sha256(value: string | Buffer): string {
   return createHash("sha256").update(value).digest("hex");
 }
 
-function readPinnedSource(): string {
-  const archive = readFileSync(ARCHIVE_PATH);
+function readPinnedSource(source: TranslationSource): string {
+  const archivePath = path.resolve(
+    process.cwd(),
+    `.cache/scripture-sources/${source.archiveName}`,
+  );
+  const archive = readFileSync(archivePath);
   const archiveHash = sha256(archive);
-  if (archiveHash !== ARCHIVE_SHA256) {
+  if (archiveHash !== source.archiveSha256) {
     throw new Error(
-      `Source archive hash mismatch: expected ${ARCHIVE_SHA256}, received ${archiveHash}`,
+      `Source archive hash mismatch: expected ${source.archiveSha256}, received ${archiveHash}`,
     );
   }
 
-  const result = spawnSync("unzip", ["-p", ARCHIVE_PATH, ARCHIVE_ENTRY], {
+  const result = spawnSync("unzip", ["-p", archivePath, source.archiveEntry], {
     encoding: "utf8",
     maxBuffer: 16 * 1024 * 1024,
   });
@@ -78,8 +137,8 @@ function parseVerseLine(line: string, lineNumber: number): ImportVerse {
   };
 }
 
-function parseCatalogue(source: string): ImportVerse[] {
-  const lines = source.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
+function parseCatalogue(sourceText: string, source: TranslationSource): ImportVerse[] {
+  const lines = sourceText.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
   const verses = lines.map((line, index) => parseVerseLine(line, index + 1));
   const expectedBooks = new Set(BIBLE_BOOKS.map((book) => book.id));
   const importedBooks = new Set(verses.map((verse) => verse.book_id));
@@ -87,9 +146,9 @@ function parseCatalogue(source: string): ImportVerse[] {
     verses.map((verse) => `${verse.book_id}:${verse.chapter}:${verse.verse}`),
   );
 
-  if (verses.length !== EXPECTED_VERSE_COUNT) {
+  if (verses.length !== source.expectedVerseCount) {
     throw new Error(
-      `Expected ${EXPECTED_VERSE_COUNT} verses, received ${verses.length}`,
+      `Expected ${source.expectedVerseCount} verses, received ${verses.length}`,
     );
   }
   if (importedBooks.size !== expectedBooks.size) {
@@ -104,16 +163,16 @@ function parseCatalogue(source: string): ImportVerse[] {
     throw new Error("The source contains duplicate verse references");
   }
   const emptyVerseCount = verses.filter((verse) => verse.text.length === 0).length;
-  if (emptyVerseCount !== EXPECTED_EMPTY_VERSE_COUNT) {
+  if (emptyVerseCount !== source.expectedEmptyVerseCount) {
     throw new Error(
-      `Expected ${EXPECTED_EMPTY_VERSE_COUNT} empty verse markers, received ${emptyVerseCount}`,
+      `Expected ${source.expectedEmptyVerseCount} empty verse markers, received ${emptyVerseCount}`,
     );
   }
 
   return verses;
 }
 
-async function applyCatalogue(verses: ImportVerse[]): Promise<void> {
+async function applyCatalogue(source: TranslationSource, verses: ImportVerse[]): Promise<void> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !serviceKey) {
@@ -129,17 +188,17 @@ async function applyCatalogue(verses: ImportVerse[]): Promise<void> {
     .from("scripture_translations")
     .upsert(
       {
-        code: "WEB",
-        name: "World English Bible",
+        code: source.code,
+        name: source.name,
         language_code: "eng",
-        source_id: "engwebp",
+        source_id: source.sourceId,
         source_name: "eBible.org",
-        source_version: "2020 stable text edition",
-        source_url: "https://ebible.org/engwebp/",
-        source_artifact_sha256: ARCHIVE_SHA256,
-        source_published_at: "2026-08-26",
-        rights_url: "https://ebible.org/engwebp/copyright.htm",
-        attribution: "World English Bible — Public Domain; source: eBible.org",
+        source_version: source.sourceVersion,
+        source_url: source.sourceUrl,
+        source_artifact_sha256: source.archiveSha256,
+        source_published_at: source.sourcePublishedAt,
+        rights_url: source.rightsUrl,
+        attribution: source.attribution,
         can_display_text: true,
         can_generate_audio: true,
         can_stream_audio: true,
@@ -153,7 +212,7 @@ async function applyCatalogue(verses: ImportVerse[]): Promise<void> {
 
   if (translationError || !translation) {
     throw new Error(
-      `Unable to upsert WEB translation: ${translationError?.message ?? "missing row"}`,
+      `Unable to upsert ${source.code} translation: ${translationError?.message ?? "missing row"}`,
     );
   }
 
@@ -176,23 +235,32 @@ async function applyCatalogue(verses: ImportVerse[]): Promise<void> {
     .from("scripture_verses")
     .select("id", { count: "exact", head: true })
     .eq("translation_id", translation.id);
-  if (countError || count !== EXPECTED_VERSE_COUNT) {
+  if (countError || count !== source.expectedVerseCount) {
     throw new Error(
-      `Import verification failed: expected ${EXPECTED_VERSE_COUNT}, received ${count ?? "unknown"}`,
+      `Import verification failed: expected ${source.expectedVerseCount}, received ${count ?? "unknown"}`,
     );
   }
 }
 
 async function main(): Promise<void> {
   const shouldApply = process.argv.includes("--apply");
-  const verses = parseCatalogue(readPinnedSource());
+  const requestedCode = process.argv
+    .find((argument) => argument.startsWith("--translation="))
+    ?.split("=", 2)[1]
+    ?.toUpperCase() as TranslationSource["code"] | undefined;
+  const source = TRANSLATION_SOURCES[requestedCode ?? "WEB"];
+  if (!source) {
+    throw new Error("Choose --translation=WEB, --translation=KJV, or --translation=ASV");
+  }
+  const verses = parseCatalogue(readPinnedSource(source), source);
   const first = verses[0];
   const last = verses.at(-1);
 
-  console.log(`Source SHA-256: ${ARCHIVE_SHA256}`);
+  console.log(`Translation: ${source.code} — ${source.name}`);
+  console.log(`Source SHA-256: ${source.archiveSha256}`);
   console.log(`Validated books: ${new Set(verses.map((verse) => verse.book_id)).size}`);
   console.log(`Validated verses: ${verses.length}`);
-  console.log(`Empty verse markers preserved: ${EXPECTED_EMPTY_VERSE_COUNT}`);
+  console.log(`Empty verse markers preserved: ${source.expectedEmptyVerseCount}`);
   console.log(`Canonical range: ${first.book_id} ${first.chapter}:${first.verse} → ${last?.book_id} ${last?.chapter}:${last?.verse}`);
   console.log(`John 3:16 hash: ${verses.find((verse) => verse.book_id === "JHN" && verse.chapter === 3 && verse.verse === 16)?.text_hash}`);
 
@@ -201,8 +269,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  await applyCatalogue(verses);
-  console.log(`Applied and verified ${verses.length} WEB verses.`);
+  await applyCatalogue(source, verses);
+  console.log(`Applied and verified ${verses.length} ${source.code} verses.`);
 }
 
 main().catch((error: unknown) => {

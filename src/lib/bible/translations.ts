@@ -13,6 +13,17 @@ export const TRANSLATIONS: TranslationOption[] = [
     label: "World English Bible",
     languageCode: "eng",
   },
+  {
+    id: "KJV",
+    label: "King James Version",
+    languageCode: "eng",
+    note: "Public domain outside the United Kingdom",
+  },
+  {
+    id: "ASV",
+    label: "American Standard Version",
+    languageCode: "eng",
+  },
 ];
 
 export function getTranslation(id?: string | null): TranslationOption {
