@@ -41,13 +41,13 @@ export function ScriptureAudioPlayer({
   }
 
   return (
-    <Surface className="grid gap-5 p-5 md:p-7" variant="strong">
+    <Surface className="grid gap-6 bg-surface p-6 md:p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-label text-accent">
+          <p className="editorial-kicker">
             Ordered listening
           </p>
-          <h2 className="mt-2 font-display text-3xl text-text-primary">{title}</h2>
+          <h2 className="mt-3 font-display text-3xl font-medium tracking-[-0.04em] text-text-primary md:text-4xl">{title}</h2>
           <p className="mt-2 font-sans text-sm leading-6 text-text-muted">
             {references.length} {references.length === 1 ? "passage" : "passages"} in this selection
           </p>

@@ -8,33 +8,35 @@ export default function BrowsePage() {
   ];
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 py-12">
+    <section className="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
       <div className="max-w-2xl">
-        <h1 className="font-display text-4xl text-text-primary">
-          Browse by book
+        <p className="editorial-kicker">The library</p>
+        <h1 className="page-heading mt-5 text-text-primary">
+          Browse by book.
         </h1>
         <p className="mt-3 font-sans text-text-muted">
           Choose a book and chapter to read the canonical scripture text.
         </p>
       </div>
-      <div className="mt-10 grid gap-10 lg:grid-cols-2">
+      <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {groups.map((group) => (
-          <section key={group.title}>
-            <h2 className="font-sans text-sm font-semibold uppercase tracking-eyebrow text-accent">
+          <section className="rounded-surface bg-surface p-6 md:p-8" key={group.title}>
+            <h2 className="font-sans text-sm font-medium uppercase tracking-eyebrow text-text-primary">
               {group.title}
             </h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5 grid sm:grid-cols-2 sm:gap-x-8">
               {group.books.map((book) => (
                 <Link
                   key={book.id}
                   href={`/browse/${book.id}`}
-                  className="rounded-surface border border-border bg-surface p-4 transition-colors hover:border-accent"
+                  className="group flex min-h-16 items-center justify-between gap-4 border-b border-border py-4 transition-colors hover:text-accent-light"
                 >
-                  <span className="block font-sans text-base font-semibold text-text-primary">
+                  <span className="block font-sans text-base font-medium text-text-primary">
                     {book.name}
                   </span>
-                  <span className="mt-1 block font-sans text-xs text-text-muted">
-                    {book.chapters} chapter{book.chapters === 1 ? "" : "s"}
+                  <span className="flex items-center gap-2 font-sans text-xs text-text-muted">
+                    {book.chapters}
+                    <span aria-hidden="true" className="size-2 rounded-full bg-[var(--page-decoration)]" />
                   </span>
                 </Link>
               ))}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui";
+import { APP_CONFIG } from "@/config/app";
 import { routes } from "@/config/routes";
 
 export async function Nav() {
@@ -11,20 +12,20 @@ export async function Nav() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="app-chrome flex flex-col gap-4 border-b border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <header className="app-chrome relative z-20 mx-3 mt-3 flex flex-col gap-4 rounded-[2rem] bg-surface px-5 py-4 sm:mx-6 sm:mt-5 sm:flex-row sm:items-center sm:justify-between sm:rounded-control lg:mx-auto lg:w-[calc(100%-3rem)] lg:max-w-6xl">
       <Link
         href={routes.home}
-        className="w-fit font-display text-xl text-text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+        className="text-link-target w-fit font-display text-xl font-medium tracking-[-0.04em] text-text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
       >
-        OneScripture
+        {APP_CONFIG.NAME}
       </Link>
-      <nav className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2 font-sans text-xs uppercase tracking-wide text-text-muted sm:w-auto sm:justify-start sm:gap-6 sm:text-sm">
-        <Link href={routes.browse} className="transition-colors hover:text-accent">
+      <nav className="flex w-full min-w-0 flex-wrap items-center gap-x-5 gap-y-2 font-sans text-sm font-medium text-text-muted sm:w-auto sm:gap-6">
+        <Link href={routes.browse} className="text-link-target transition-colors hover:text-accent">
           Browse
         </Link>
         <Link
           href={routes.topics.index}
-          className="transition-colors hover:text-accent"
+          className="text-link-target transition-colors hover:text-accent"
         >
           Topics
         </Link>
@@ -32,7 +33,7 @@ export async function Nav() {
           <>
             <Link
               href={routes.playlists.index}
-              className="transition-colors hover:text-accent"
+              className="text-link-target transition-colors hover:text-accent"
             >
               Playlists
             </Link>
@@ -44,12 +45,12 @@ export async function Nav() {
           </>
         ) : (
           <>
-            <Link href={routes.login} className="transition-colors hover:text-accent">
+            <Link href={routes.login} className="text-link-target transition-colors hover:text-accent">
               Sign In
             </Link>
             <Link
               href={routes.signup}
-              className="text-accent transition-colors hover:text-accent-light"
+              className="inline-flex min-h-11 items-center rounded-control bg-accent px-5 text-text-primary transition-colors hover:bg-accent-light"
             >
               Sign Up
             </Link>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Surface } from "@/components/ui";
+import { APP_CONFIG } from "@/config/app";
 import { routes } from "@/config/routes";
 
 export function AuthCard({
@@ -13,15 +14,16 @@ export function AuthCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-16">
-      <Surface className="w-full max-w-sm p-8">
+    <div className="flex flex-1 items-center justify-center px-4 py-16 md:py-24">
+      <Surface className="w-full max-w-md p-8 md:p-10">
         <Link
           href={routes.home}
-          className="mb-6 block text-center font-display text-2xl text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+          className="text-link-target mb-10 w-fit font-display text-xl font-medium tracking-[-0.04em] text-text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
         >
-          OneScripture
+          {APP_CONFIG.NAME}
         </Link>
-        <h1 className="font-sans text-lg font-medium text-text-primary">
+        <p className="editorial-kicker">{APP_CONFIG.NAME} account</p>
+        <h1 className="mt-4 font-display text-4xl font-medium tracking-[-0.05em] text-text-primary">
           {heading}
         </h1>
         {subtext && (

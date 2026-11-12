@@ -28,7 +28,7 @@ function FieldRoot({
   name,
 }: FieldProps) {
   return (
-    <div className={classNames("grid gap-2", className)}>
+    <div className={classNames("grid min-w-0 gap-2", className)}>
       <label
         className={classNames(
           "font-sans text-sm font-semibold text-text-primary",
@@ -51,7 +51,7 @@ function FieldInput({ className, id, name, ...props }: FieldInputProps) {
   return (
     <input
       className={classNames(
-        "min-h-12 w-full rounded-control border border-border bg-field px-4 font-sans text-base text-field-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-field-foreground/55 focus:border-focus focus-visible:ring-2 focus-visible:ring-focus/30 disabled:cursor-not-allowed disabled:opacity-55",
+        "min-h-14 min-w-0 w-full rounded-control border border-border bg-field px-5 font-sans text-base text-field-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[var(--color-muted-dark)] focus:border-focus focus-visible:ring-2 focus-visible:ring-focus/20 disabled:cursor-not-allowed disabled:opacity-55",
         className,
       )}
       id={id ?? name}

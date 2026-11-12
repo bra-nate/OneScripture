@@ -5,40 +5,49 @@ import { routes } from "@/config/routes";
 
 export default function Home() {
   return (
-    <section className="flex flex-1 flex-col px-6 py-16 md:py-24">
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-12">
-        <div className="max-w-3xl">
-          <p className="font-sans text-sm font-semibold uppercase tracking-hero text-accent">
+    <section className="flex flex-1 flex-col px-4 py-14 sm:px-6 md:py-24">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-12 md:gap-16">
+        <div className="relative z-10 max-w-5xl">
+          <p className="editorial-kicker">
             Canonical scripture
           </p>
-          <h1 className="mt-5 font-display text-5xl leading-tight text-text-primary md:text-7xl">
-            Find the passage. Read every verse.
+          <h1 className="display-heading mt-6 text-text-primary">
+            Find it. Hear it. Keep it.
           </h1>
-          <p className="mt-6 max-w-2xl font-sans text-lg leading-8 text-text-muted">
+          <p className="mt-8 max-w-xl font-sans text-lg leading-8 text-text-muted md:text-xl">
             Read the World English Bible and hear any verse, range, or chapter
             narrated aloud — pick what you want, play it once or on repeat.
           </p>
         </div>
-        <div className="max-w-4xl">
+        <div className="relative z-10 rounded-surface bg-surface p-5 md:max-w-4xl md:p-7">
           <PassageSearchForm />
-          <div className="mt-5 flex flex-wrap items-center gap-4">
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               href={routes.browse}
-              className="font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light"
+              className="editorial-link font-sans text-sm font-medium text-text-primary underline"
             >
               Browse by book
             </Link>
             <Link
               href={routes.topics.index}
-              className="font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light"
+              className="editorial-link font-sans text-sm font-medium text-text-primary underline"
             >
-              Explore topical scriptures
+              Listen by need
             </Link>
             <span className="font-sans text-sm text-text-muted">
               Jump to a reference: John 3:16, Psalms 23, Romans 8:28.
             </span>
           </div>
           <AdSlot slotId="homepage-hero" />
+        </div>
+        <div className="hero-paper-art" aria-hidden="true">
+          <div className="paper-wave">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
       </div>
     </section>

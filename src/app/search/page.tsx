@@ -14,10 +14,11 @@ export default async function SearchPage({
   const parsed = parseReference(query);
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-12">
+    <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-16 md:py-24">
       <div>
-        <h1 className="font-display text-4xl text-text-primary">Go to a passage</h1>
-        <div className="mt-6">
+        <p className="editorial-kicker">Search</p>
+        <h1 className="page-heading mt-5 text-text-primary">Go to a passage.</h1>
+        <div className="mt-8 rounded-surface bg-surface p-5 md:p-7">
           <PassageSearchForm
             defaultQuery={query}
             compact
@@ -25,7 +26,7 @@ export default async function SearchPage({
         </div>
       </div>
 
-      <div className="mt-10">
+      <div className="mt-12">
         {!query ? (
           <SearchEmptyState
             title="Start with a passage reference"
@@ -36,12 +37,12 @@ export default async function SearchPage({
             href={`/passage/${parsed.bookId}/${parsed.chapter}?translation=${translation.id}${
               parsed.verseStart ? `&verseStart=${parsed.verseStart}` : ""
             }${parsed.verseEnd ? `&verseEnd=${parsed.verseEnd}` : ""}`}
-            className="block rounded-surface border border-border bg-surface p-6 transition-colors hover:border-accent"
+            className="group block rounded-surface bg-surface p-7 transition-transform motion-safe:hover:-translate-y-1 md:p-10"
           >
-            <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
+            <p className="editorial-kicker">
               Best match
             </p>
-            <h2 className="mt-3 font-display text-3xl text-text-primary">
+            <h2 className="mt-5 font-display text-4xl font-medium tracking-[-0.05em] text-text-primary md:text-5xl">
               {formatDisplayRef(parsed, translation.id.replace(/^ENG/, ""))}
             </h2>
             <p className="mt-3 font-sans text-sm text-text-muted">

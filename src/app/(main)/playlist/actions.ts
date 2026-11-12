@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { routes } from "@/config/routes";
 import { formatDisplayRef, serializePassageRef } from "@/lib/bible/reference";
+import {
+  getNextPlaylistPosition,
+  hasPlaylistVerse,
+  type PositionedPlaylistItem,
+} from "@/lib/playlists/integrity";
 import { type PlaylistActionState } from "@/lib/playlists/types";
 import { parseSingleVerseReference, validatePlaylistName } from "@/lib/playlists/validation";
 import { MAX_SELECTION_VERSES } from "@/lib/scripture/selections";
@@ -17,20 +23,19 @@ export async function createPlaylist(
   const validationError = validatePlaylistName(name);
   if (validationError) return { message: validationError, status: "error" };
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { message: "Sign in to create a playlist.", status: "error" };
+  const context = await getPlaylistActionContext("Sign in to create a playlist.");
+  if ("state" in context) return context.state;
 
-  const { data, error } = await supabase
+  const { data, error } = await context.supabase
     .from("playlists")
-    .insert({ name, user_id: user.id })
+    .insert({ name, user_id: context.userId })
     .select("id")
     .single<{ id: string }>();
   if (error || !data) {
     return { message: "The playlist could not be created. Try again.", status: "error" };
   }
 
-  redirect(`/playlist/${data.id}`);
+  redirect(routes.playlists.detail(data.id));
 }
 
 export async function addVerseToPlaylist(
@@ -44,33 +49,49 @@ export async function addVerseToPlaylist(
     return { message: "Choose a valid playlist and verse.", status: "error" };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { message: "Sign in to save this verse.", status: "error" };
+  const context = await getPlaylistActionContext("Sign in to save this verse.");
+  if ("state" in context) return context.state;
 
-  const { data: playlists } = await supabase
+  const { data: playlists, error: playlistError } = await context.supabase
     .from("playlists")
     .select("id")
     .eq("id", playlistId)
-    .eq("user_id", user.id)
+    .eq("user_id", context.userId)
     .limit(1)
     .returns<Array<{ id: string }>>();
+  if (playlistError) return unavailableState("The playlist could not be checked. Try again.");
   if (!playlists?.[0]) return { message: "That playlist is not available.", status: "error" };
 
-  const { count, data: lastItems } = await supabase
+  const { data: itemRows, error: itemsError } = await context.supabase
     .from("playlist_items")
-    .select("order", { count: "exact" })
+    .select("book_id, chapter, verse_start, translation_id, order")
     .eq("playlist_id", playlistId)
-    .order("order", { ascending: false })
-    .limit(1)
-    .returns<Array<{ order: number }>>();
-  if ((count ?? 0) >= MAX_SELECTION_VERSES) {
+    .returns<Array<{
+      book_id: string;
+      chapter: number;
+      verse_start: number;
+      translation_id: string;
+      order: number;
+    }>>();
+  if (itemsError) return unavailableState("The playlist could not be checked. Try again.");
+
+  const items: PositionedPlaylistItem[] = (itemRows ?? []).map((item) => ({
+    bookId: item.book_id,
+    chapter: item.chapter,
+    position: item.order,
+    translationId: item.translation_id,
+    verse: item.verse_start,
+  }));
+  if (hasPlaylistVerse(items, reference, "WEB")) {
+    return { message: "This verse is already in that playlist.", status: "error" };
+  }
+  if (items.length >= MAX_SELECTION_VERSES) {
     return {
       message: `A playlist can contain at most ${MAX_SELECTION_VERSES} scriptures.`,
       status: "error",
     };
   }
-  const { error } = await supabase.from("playlist_items").insert({
+  const { error } = await context.supabase.from("playlist_items").insert({
     playlist_id: playlistId,
     book_id: reference.bookId,
     chapter: reference.chapter,
@@ -78,33 +99,75 @@ export async function addVerseToPlaylist(
     verse_end: null,
     translation_id: "WEB",
     display_ref: formatDisplayRef(reference, "WEB"),
-    order: (lastItems?.[0]?.order ?? -1) + 1,
+    order: getNextPlaylistPosition(items),
   });
-  if (error) return { message: "This verse could not be added. Try again.", status: "error" };
+  if (error?.code === "23505") {
+    return { message: "This verse is already in that playlist.", status: "error" };
+  }
+  if (error) return unavailableState("This verse could not be added. Try again.");
 
-  revalidatePath("/playlist");
-  revalidatePath(`/playlist/${playlistId}`);
+  revalidatePath(routes.playlists.index);
+  revalidatePath(routes.playlists.detail(playlistId));
   return {
     message: `${serializePassageRef(reference)} added to your playlist.`,
     status: "success",
   };
 }
 
-export async function removePlaylistItem(playlistId: string, itemId: string): Promise<void> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+export async function removePlaylistItem(
+  playlistId: string,
+  itemId: string,
+  _state: PlaylistActionState,
+): Promise<PlaylistActionState> {
+  void _state;
+  const context = await getPlaylistActionContext("Sign in to update this playlist.");
+  if ("state" in context) return context.state;
 
-  const { data: playlists } = await supabase
+  const { data: playlists, error: playlistError } = await context.supabase
     .from("playlists")
     .select("id")
     .eq("id", playlistId)
-    .eq("user_id", user.id)
+    .eq("user_id", context.userId)
     .limit(1)
     .returns<Array<{ id: string }>>();
-  if (!playlists?.[0]) return;
+  if (playlistError) return unavailableState("The playlist could not be checked. Try again.");
+  if (!playlists?.[0]) {
+    return { message: "That playlist is not available.", status: "error" };
+  }
 
-  await supabase.from("playlist_items").delete().eq("id", itemId).eq("playlist_id", playlistId);
-  revalidatePath("/playlist");
-  revalidatePath(`/playlist/${playlistId}`);
+  const { data: deletedItems, error } = await context.supabase
+    .from("playlist_items")
+    .delete()
+    .eq("id", itemId)
+    .eq("playlist_id", playlistId)
+    .select("id")
+    .returns<Array<{ id: string }>>();
+  if (error) return unavailableState("This scripture could not be removed. Try again.");
+  if (!deletedItems?.length) {
+    return { message: "That scripture is no longer in this playlist.", status: "error" };
+  }
+
+  revalidatePath(routes.playlists.index);
+  revalidatePath(routes.playlists.detail(playlistId));
+  redirect(`${routes.playlists.detail(playlistId)}?updated=removed`);
+}
+
+type PlaylistActionContext =
+  | { supabase: Awaited<ReturnType<typeof createClient>>; userId: string }
+  | { state: PlaylistActionState };
+
+async function getPlaylistActionContext(signInMessage: string): Promise<PlaylistActionContext> {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) return { state: unavailableState("Your session could not be verified. Try again.") };
+    if (!user) return { state: { message: signInMessage, status: "error" } };
+    return { supabase, userId: user.id };
+  } catch {
+    return { state: unavailableState("The playlist service is temporarily unavailable.") };
+  }
+}
+
+function unavailableState(message: string): PlaylistActionState {
+  return { message, status: "error" };
 }

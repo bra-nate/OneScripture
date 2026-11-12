@@ -138,6 +138,9 @@ function selectionErrorResponse(error: unknown): Response {
   }
   if (error instanceof ScriptureError) {
     const statusByCode = {
+      catalogue_misconfigured: 503,
+      catalogue_permission_denied: 503,
+      catalogue_timeout: 504,
       invalid_reference: 400,
       passage_not_found: 404,
       selection_too_large: 413,

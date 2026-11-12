@@ -15,7 +15,7 @@ export function getButtonClassName({
   variant = "primary",
 }: ButtonStyleOptions = {}): string {
   return classNames(
-    "inline-flex items-center justify-center rounded-control font-sans text-sm font-semibold transition-[background-color,color,border-color,opacity,transform] duration-200 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50 motion-safe:active:translate-y-px",
+    "inline-flex items-center justify-center rounded-control font-sans text-sm font-medium transition-[background-color,color,border-color,opacity,transform] duration-200 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50 motion-safe:active:translate-y-px",
     BUTTON_VARIANTS[variant],
     BUTTON_SIZES[size],
     className,
@@ -24,11 +24,11 @@ export function getButtonClassName({
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    "border border-transparent bg-surface-strong text-surface-strong-foreground hover:opacity-85",
+    "border border-transparent bg-accent text-text-primary hover:bg-accent-light",
   secondary:
-    "border border-current bg-transparent text-text-primary hover:bg-surface hover:text-accent",
+    "border border-text-primary bg-transparent text-text-primary hover:bg-surface",
   selected:
-    "border border-accent bg-accent text-background hover:opacity-85",
+    "border border-text-primary bg-text-primary text-background hover:opacity-85",
   ghost:
     "border border-transparent bg-transparent text-text-primary hover:bg-surface",
 };
@@ -36,6 +36,6 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
 const BUTTON_SIZES: Record<ButtonSize, string> = {
   small: "min-h-11 px-3 py-2 text-xs",
   medium: "min-h-12 px-5 py-3",
-  large: "min-h-12 px-6 py-3 uppercase tracking-wide",
+  large: "min-h-12 px-7 py-3",
   circle: "size-12 rounded-full p-0",
 };

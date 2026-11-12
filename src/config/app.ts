@@ -1,4 +1,5 @@
 export const APP_CONFIG = {
+  NAME: "oneWord",
   ADS_ENABLED: false,
   DEFAULT_TRANSLATION: 'WEB',
   DEFAULT_LANGUAGE: 'en',

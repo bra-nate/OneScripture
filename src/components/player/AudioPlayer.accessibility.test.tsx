@@ -16,15 +16,7 @@ const ITEM: AudioSelectionItem = {
 
 describe("player accessibility", () => {
   beforeEach(() => {
-    vi.stubGlobal(
-      "Audio",
-      class AudioPreloader {
-        preload = "";
-        src = "";
-        load = vi.fn();
-        removeAttribute = vi.fn();
-      },
-    );
+    stubAudioDownloads();
   });
 
   afterEach(() => vi.unstubAllGlobals());
@@ -52,3 +44,10 @@ describe("player accessibility", () => {
     expect(results.violations).toEqual([]);
   });
 });
+
+function stubAudioDownloads() {
+  let count = 0;
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, blob: async () => new Blob(["mp3"]) })));
+  URL.createObjectURL = vi.fn(() => `blob:local/${++count}`);
+  URL.revokeObjectURL = vi.fn();
+}

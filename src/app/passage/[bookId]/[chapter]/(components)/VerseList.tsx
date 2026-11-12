@@ -7,6 +7,7 @@ import { type ScriptureVerse } from "@/lib/scripture/types";
 
 export interface VerseListProps {
   activeReference: string | null;
+  arePlaylistsAvailable: boolean;
   isSignedIn: boolean;
   onListen: (reference: string) => void;
   onToggleVerse: (verse: number, isRangeExtend: boolean) => void;
@@ -17,6 +18,7 @@ export interface VerseListProps {
 
 export function VerseList({
   activeReference,
+  arePlaylistsAvailable,
   isSignedIn,
   onListen,
   onToggleVerse,
@@ -25,7 +27,7 @@ export function VerseList({
   verses,
 }: VerseListProps) {
   return (
-    <ol className="space-y-1" aria-label="Scripture verses">
+    <ol className="overflow-hidden rounded-[2rem] bg-surface px-3 md:px-5" aria-label="Scripture verses">
       {verses.map((verse) => {
         const reference = formatVerseReference(verse);
         const isActive = activeReference === reference;
@@ -37,8 +39,8 @@ export function VerseList({
             id={`verse-${verse.verse}`}
             key={verse.id}
             className={classNames(
-              "grid grid-cols-[auto_1.75rem_1fr] gap-3 border-b border-border px-3 py-4 transition-colors last:border-b-0",
-              isActive && "rounded-control bg-highlight",
+              "grid grid-cols-[auto_1.75rem_1fr] gap-3 border-b border-border px-3 py-5 transition-colors last:border-b-0 md:py-6",
+              isActive && "bg-highlight",
             )}
           >
             <input
@@ -58,7 +60,7 @@ export function VerseList({
               {verse.verse}
             </span>
             <div>
-              <p className="font-display text-lg leading-8 text-text-primary">
+              <p className="font-display text-lg leading-8 text-text-primary md:text-xl md:leading-9">
                 {verse.text || (
                   <span className="italic text-text-muted">
                     Text not present in this edition.
@@ -74,11 +76,13 @@ export function VerseList({
                 >
                   {isActive ? "Now playing" : "Listen to verse"}
                 </Button>
-                <VersePlaylistAction
-                  isSignedIn={isSignedIn}
-                  playlists={playlists}
-                  reference={reference}
-                />
+                {arePlaylistsAvailable && (
+                  <VersePlaylistAction
+                    isSignedIn={isSignedIn}
+                    playlists={playlists}
+                    reference={reference}
+                  />
+                )}
               </div>
             </div>
           </li>

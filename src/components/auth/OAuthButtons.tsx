@@ -25,6 +25,8 @@ const PROVIDERS: ProviderOption[] = [
   },
 ];
 
+const ENABLED_PROVIDERS = PROVIDERS.filter(({ isEnabled }) => isEnabled);
+
 export function OAuthButtons() {
   const [error, setError] = useState<string | null>(null);
   const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null);
@@ -41,6 +43,8 @@ export function OAuthButtons() {
     });
   }
 
+  if (!ENABLED_PROVIDERS.length) return null;
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3" aria-hidden="true">
@@ -51,7 +55,7 @@ export function OAuthButtons() {
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      {PROVIDERS.map(({ id, label, isEnabled }) => {
+      {ENABLED_PROVIDERS.map(({ id, label }) => {
         const isCurrentProvider = pendingProvider === id;
         const buttonLabel = isCurrentProvider ? "Redirecting…" : label;
 
@@ -60,12 +64,10 @@ export function OAuthButtons() {
             key={id}
             type="button"
             variant="secondary"
-            disabled={!isEnabled || isPending}
-            title={isEnabled ? undefined : `${label} setup pending`}
+            disabled={isPending}
             onClick={() => handleSignIn(id)}
           >
             {buttonLabel}
-            {!isEnabled && " — setup pending"}
           </Button>
         );
       })}

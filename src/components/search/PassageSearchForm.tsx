@@ -16,8 +16,8 @@ export function PassageSearchForm({
       action={routes.search}
       className={
         compact
-          ? "grid gap-3 sm:grid-cols-[1fr_auto]"
-          : "grid w-full max-w-3xl gap-3 sm:grid-cols-[1fr_auto]"
+          ? "grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto]"
+          : "grid min-w-0 w-full max-w-3xl gap-3 sm:grid-cols-[minmax(0,1fr)_auto]"
       }
     >
       <Field isLabelHidden label="Go to a passage reference" name="q">

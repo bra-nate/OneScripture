@@ -8,7 +8,8 @@ import {
 } from "@/app/passage/[bookId]/[chapter]/(components)/VerseList";
 import { toggleVerseSelection } from "@/app/passage/[bookId]/[chapter]/(utils)/verseSelection";
 import { ScriptureAudioPlayer } from "@/components/player";
-import { Button } from "@/components/ui";
+import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
+import { Button, Status } from "@/components/ui";
 import { type PlaylistSummary } from "@/lib/playlists/types";
 import { type ScriptureVerse } from "@/lib/scripture/types";
 
@@ -16,6 +17,7 @@ export interface ChapterReaderProps {
   chapterReference: string;
   displayReference: string;
   isSignedIn: boolean;
+  playlistErrorMessage: string | null;
   playlists: PlaylistSummary[];
   verses: ScriptureVerse[];
 }
@@ -24,6 +26,7 @@ export function ChapterReader({
   chapterReference,
   displayReference,
   isSignedIn,
+  playlistErrorMessage,
   playlists,
   verses,
 }: ChapterReaderProps) {
@@ -107,11 +110,18 @@ export function ChapterReader({
       </div>
 
       <div className="mt-5">
+        {playlistErrorMessage && (
+          <Status className="mb-5" label="Playlists temporarily unavailable" tone="information">
+            <p>{playlistErrorMessage}</p>
+            <RetryCurrentPageButton />
+          </Status>
+        )}
         <VerseList
           activeReference={activeReference}
           isSignedIn={isSignedIn}
           onListen={(reference) => handleListen(reference)}
           onToggleVerse={handleToggleVerse}
+          arePlaylistsAvailable={!playlistErrorMessage}
           playlists={playlists}
           selectedVerses={selectedVerses}
           verses={verses}

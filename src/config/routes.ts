@@ -8,8 +8,10 @@ export const routes = {
     index: "/playlist",
     detail: (playlistId: string) => `/playlist/${encodeURIComponent(playlistId)}`,
   },
+  forgotPassword: "/forgot-password",
   login: "/login",
   signup: "/signup",
+  updatePassword: "/update-password",
   topics: {
     index: "/topics",
     detail: (slug: string) => `/topics/${encodeURIComponent(slug)}`,

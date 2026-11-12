@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { formatPassageRef, type PassageRef } from "@/lib/bible/reference";
+import { toScriptureServiceError } from "@/lib/scripture/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   type ScriptureTopic,
@@ -28,15 +29,8 @@ interface TopicPassageRow {
   position: number;
 }
 
-export class TopicCatalogueError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "TopicCatalogueError";
-  }
-}
-
 export async function listPublishedTopics(): Promise<TopicSummary[]> {
-  const supabase = await createClient();
+  const supabase = await createTopicCatalogueClient();
   const { data: topics, error: topicsError } = await supabase
     .from("scripture_topics")
     .select("id, slug, title, description, is_featured")
@@ -46,7 +40,10 @@ export async function listPublishedTopics(): Promise<TopicSummary[]> {
     .returns<TopicRow[]>();
 
   if (topicsError) {
-    throw new TopicCatalogueError("The topical catalogue could not be loaded.");
+    throw toScriptureServiceError(
+      topicsError,
+      "The topical catalogue could not be loaded.",
+    );
   }
   if (!topics?.length) return [];
 
@@ -58,7 +55,10 @@ export async function listPublishedTopics(): Promise<TopicSummary[]> {
     .returns<Array<{ topic_id: string }>>();
 
   if (passagesError) {
-    throw new TopicCatalogueError("Topic passage counts could not be loaded.");
+    throw toScriptureServiceError(
+      passagesError,
+      "Topic passage counts could not be loaded.",
+    );
   }
 
   const passageCounts = new Map<string, number>();
@@ -74,7 +74,7 @@ export async function listPublishedTopics(): Promise<TopicSummary[]> {
 
 export const getPublishedTopic = cache(
   async (slug: string): Promise<ScriptureTopic | null> => {
-    const supabase = await createClient();
+    const supabase = await createTopicCatalogueClient();
     const { data: topics, error: topicError } = await supabase
       .from("scripture_topics")
       .select("id, slug, title, description, is_featured")
@@ -84,7 +84,7 @@ export const getPublishedTopic = cache(
       .returns<TopicRow[]>();
 
     if (topicError) {
-      throw new TopicCatalogueError("The topic could not be loaded.");
+      throw toScriptureServiceError(topicError, "The topic could not be loaded.");
     }
 
     const topic = topics?.[0];
@@ -98,7 +98,10 @@ export const getPublishedTopic = cache(
       .returns<TopicPassageRow[]>();
 
     if (passagesError) {
-      throw new TopicCatalogueError("The topic passages could not be loaded.");
+      throw toScriptureServiceError(
+        passagesError,
+        "The topic passages could not be loaded.",
+      );
     }
 
     const passages = (passageRows ?? []).map(mapTopicPassage);
@@ -109,6 +112,15 @@ export const getPublishedTopic = cache(
     };
   },
 );
+
+async function createTopicCatalogueClient() {
+  return createClient().catch((error: unknown) => {
+    throw toScriptureServiceError(
+      error,
+      "The topical catalogue is temporarily unavailable.",
+    );
+  });
+}
 
 function mapTopicSummary(row: TopicRow, passageCount: number): TopicSummary {
   return {

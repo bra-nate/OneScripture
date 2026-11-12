@@ -13,18 +13,13 @@ const ITEMS: AudioSelectionItem[] = [
 
 describe("AudioPlayer", () => {
   beforeEach(() => {
-    vi.stubGlobal(
-      "Audio",
-      class AudioPreloader {
-        preload = "";
-        src = "";
-        load = vi.fn();
-        removeAttribute = vi.fn();
-      },
-    );
+    stubAudioDownloads();
   });
 
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
 
   it("plays an ordered selection once and stops on the final verse", async () => {
     const onRefreshItems = vi.fn().mockResolvedValue(ITEMS);
@@ -72,6 +67,46 @@ describe("AudioPlayer", () => {
     expect(onRefreshItems).not.toHaveBeenCalled();
   });
 
+  it("plays each verse from its downloaded local copy", async () => {
+    const view = render(
+      <AudioPlayer
+        items={ITEMS}
+        onPreferencesChange={vi.fn()}
+        onRefreshItems={vi.fn().mockResolvedValue(ITEMS)}
+        preferences={DEFAULT_PLAYBACK_PREFERENCES}
+      />,
+    );
+    const audio = view.container.querySelector("audio")!;
+
+    await waitFor(() => expect(audio.getAttribute("src")).toBe("blob:local/1"));
+    expect(fetch).toHaveBeenCalledWith(ITEMS[0].url, expect.anything());
+  });
+
+  it("repeats a downloaded selection without re-signing or re-downloading", async () => {
+    const onRefreshItems = vi.fn().mockResolvedValue(ITEMS);
+    const view = render(
+      <AudioPlayer
+        items={ITEMS}
+        onPreferencesChange={vi.fn()}
+        onRefreshItems={onRefreshItems}
+        preferences={{ ...DEFAULT_PLAYBACK_PREFERENCES, mode: "loop" }}
+      />,
+    );
+    const audio = view.container.querySelector("audio")!;
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+
+    // Well past the point where signed URLs would normally be renewed.
+    vi.spyOn(Date, "now").mockReturnValue(Date.now() + 60 * 60 * 1_000);
+    for (const reference of ["Psalm 23:1", "Romans 8:28", "John 3:16", "Psalm 23:1"]) {
+      fireEvent.ended(audio);
+      await waitFor(() => expect(screen.getByText(reference)).toBeTruthy());
+    }
+
+    expect(onRefreshItems).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(audio.getAttribute("src")).toMatch(/^blob:local\//);
+  });
+
   it("restarts a single-verse selection in repeat mode", async () => {
     const item = ITEMS[0];
     const view = render(
@@ -114,3 +149,10 @@ describe("AudioPlayer", () => {
       .toBe("0:05 of 1:15");
   });
 });
+
+function stubAudioDownloads() {
+  let count = 0;
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, blob: async () => new Blob(["mp3"]) })));
+  URL.createObjectURL = vi.fn(() => `blob:local/${++count}`);
+  URL.revokeObjectURL = vi.fn();
+}

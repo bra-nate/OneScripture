@@ -5,12 +5,19 @@ import { notFound } from "next/navigation";
 import { ChapterReader } from "@/app/passage/[bookId]/[chapter]/(components)/ChapterReader";
 import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
+import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
 import { Status } from "@/components/ui";
 import { APP_CONFIG } from "@/config/app";
 import { formatDisplayRef, getBook, serializePassageRef, type PassageRef } from "@/lib/bible/reference";
 import { getOwnedPlaylistSummaries } from "@/lib/playlists/catalogue";
+import { getPlaylistErrorPresentation } from "@/lib/playlists/errors";
+import { type PlaylistSummary } from "@/lib/playlists/types";
 import { getCanonicalPassage } from "@/lib/scripture/catalogue";
-import { ScriptureError } from "@/lib/scripture/errors";
+import {
+  getScriptureErrorPresentation,
+  ScriptureError,
+  type ScriptureErrorPresentation,
+} from "@/lib/scripture/errors";
 import { type CanonicalPassage } from "@/lib/scripture/types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -40,7 +47,7 @@ export async function generateMetadata({
     title: displayReference,
     description: `Read and listen to ${displayReference} from the World English Bible.`,
     openGraph: {
-      title: `${displayReference} · OneScripture`,
+      title: `${displayReference} · ${APP_CONFIG.NAME}`,
       description: `Read and listen to ${displayReference} from the World English Bible.`,
     },
   };
@@ -67,13 +74,21 @@ export default async function PassagePage({
   };
   const displayReference = formatDisplayRef(reference, "WEB");
   let passage: CanonicalPassage | null = null;
-  let catalogueError: string | null = null;
+  let catalogueError: ScriptureErrorPresentation | null = null;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const playlists = user ? await getOwnedPlaylistSummaries() : [];
+  let playlists: PlaylistSummary[] = [];
+  let playlistErrorMessage: string | null = null;
+  if (user) {
+    try {
+      playlists = await getOwnedPlaylistSummaries();
+    } catch (error) {
+      playlistErrorMessage = getPlaylistErrorPresentation(error).message;
+    }
+  }
 
   try {
     passage = await getCanonicalPassage(reference);
@@ -84,8 +99,7 @@ export default async function PassagePage({
     ) {
       notFound();
     }
-    catalogueError =
-      "The canonical scripture catalogue is still being prepared. Please try again shortly.";
+    catalogueError = getScriptureErrorPresentation(error);
   }
 
   return (
@@ -99,16 +113,16 @@ export default async function PassagePage({
       <div>
         <Link
           href={`/browse/${book.id}`}
-          className="font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light"
+          className="editorial-link font-sans text-sm font-medium text-text-primary underline"
         >
           Back to {book.name}
         </Link>
 
         <header className="mt-6">
-          <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
+          <p className="editorial-kicker">
             World English Bible
           </p>
-          <h1 className="mt-3 font-display text-5xl text-text-primary">
+          <h1 className="page-heading mt-5 text-text-primary">
             {displayReference}
           </h1>
           <p className="mt-4 max-w-2xl font-sans leading-7 text-text-muted">
@@ -119,8 +133,9 @@ export default async function PassagePage({
 
         {catalogueError ? (
           <div className="mt-8">
-            <Status label="Scripture text unavailable" tone="information">
-              {catalogueError}
+            <Status label={catalogueError.label} tone="information">
+              <p>{catalogueError.message}</p>
+              <RetryCurrentPageButton />
             </Status>
           </div>
         ) : (
@@ -129,6 +144,7 @@ export default async function PassagePage({
               chapterReference={serializePassageRef(reference)}
               displayReference={displayReference}
               isSignedIn={Boolean(user)}
+              playlistErrorMessage={playlistErrorMessage}
               playlists={playlists}
               verses={passage.verses}
             />

@@ -1,37 +1,71 @@
 import { notFound } from "next/navigation";
 
-import { removePlaylistItem } from "@/app/(main)/playlist/actions";
+import { PlaylistItemRemoveForm } from "@/app/(main)/playlist/(components)/PlaylistItemRemoveForm";
+import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
 import { ScriptureAudioPlayer } from "@/components/player";
-import { Button, ButtonLink, Surface } from "@/components/ui";
+import { ButtonLink, Status, Surface } from "@/components/ui";
 import { routes } from "@/config/routes";
 import { serializePassageRef } from "@/lib/bible/reference";
 import { getOwnedPlaylistDetail } from "@/lib/playlists/catalogue";
+import { getPlaylistErrorPresentation, type PlaylistErrorPresentation } from "@/lib/playlists/errors";
+import { type PlaylistDetail } from "@/lib/playlists/types";
 
 export default async function PlaylistDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ playlistId: string }>;
+  searchParams: Promise<{ updated?: string | string[] }>;
 }) {
   const { playlistId } = await params;
-  const playlist = await getOwnedPlaylistDetail(playlistId);
+  const query = await searchParams;
+  let playlist: PlaylistDetail | null = null;
+  let playlistError: PlaylistErrorPresentation | null = null;
+
+  try {
+    playlist = await getOwnedPlaylistDetail(playlistId);
+  } catch (error) {
+    playlistError = getPlaylistErrorPresentation(error);
+  }
+
+  if (playlistError) {
+    return (
+      <section className="mx-auto w-full max-w-5xl flex-1 px-6 py-16 md:py-24">
+        <ButtonLink href={routes.playlists.index} size="small" variant="ghost">
+          Back to playlists
+        </ButtonLink>
+        <Status className="mt-8" label={playlistError.label} tone="information">
+          <p>{playlistError.message}</p>
+          <RetryCurrentPageButton />
+        </Status>
+      </section>
+    );
+  }
+
   if (!playlist) notFound();
 
   const references = playlist.items.map(({ reference }) => serializePassageRef(reference));
 
   return (
-    <section className="mx-auto w-full max-w-5xl flex-1 px-6 py-12">
+    <section className="mx-auto w-full max-w-5xl flex-1 px-6 py-16 md:py-24">
       <ButtonLink href={routes.playlists.index} size="small" variant="ghost">
         Back to playlists
       </ButtonLink>
       <header className="mt-6 max-w-2xl">
-        <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
+        <p className="editorial-kicker">
           Saved playlist
         </p>
-        <h1 className="mt-3 font-display text-5xl text-text-primary">{playlist.name}</h1>
+        <h1 className="page-heading mt-5 text-text-primary">{playlist.name}</h1>
         <p className="mt-4 font-sans leading-7 text-text-muted">
           {references.length} {references.length === 1 ? "scripture" : "scriptures"}, played in order.
         </p>
       </header>
+
+      {query.updated === "removed" && (
+        <Status className="mt-6" label="Playlist updated" tone="success">
+          The scripture was removed from this playlist.
+        </Status>
+      )}
 
       <div className="mt-8">
         <ScriptureAudioPlayer references={references} title={playlist.name} />
@@ -53,18 +87,13 @@ export default async function PlaylistDetailPage({
       ) : (
         <ol className="mt-5 grid gap-3">
           {playlist.items.map((item) => {
-            const removeItem = removePlaylistItem.bind(null, playlist.id, item.id);
             return (
               <li key={item.id}>
                 <Surface className="flex flex-wrap items-center justify-between gap-4 p-4">
                   <ButtonLink href={routes.passage(item.reference)} variant="ghost">
                     {item.displayReference}
                   </ButtonLink>
-                  <form action={removeItem}>
-                    <Button size="small" type="submit" variant="ghost">
-                      Remove
-                    </Button>
-                  </form>
+                  <PlaylistItemRemoveForm itemId={item.id} playlistId={playlist.id} />
                 </Surface>
               </li>
             );

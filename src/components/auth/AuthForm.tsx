@@ -25,7 +25,7 @@ export function AuthForm({
     return (
       <Status label="Check your inbox" tone="information">
         Confirm your email, then{" "}
-        <Link href={routes.login} className="font-semibold underline">
+        <Link href={routes.login} className="text-link-target font-semibold underline">
           log in
         </Link>
         .
@@ -72,19 +72,27 @@ export function AuthForm({
       <Button isPending={pending} type="submit">
         {mode === "signup" ? "Create Account" : "Sign In"}
       </Button>
+      {mode === "login" && (
+        <Link
+          href={routes.forgotPassword}
+          className="min-h-11 content-center text-center font-sans text-sm font-semibold text-text-primary underline underline-offset-4"
+        >
+          Forgot password?
+        </Link>
+      )}
       <OAuthButtons />
       <p className="text-center font-sans text-sm text-text-muted">
         {mode === "signup" ? (
           <>
             Already have an account?{" "}
-            <Link href={routes.login} className="text-accent hover:text-accent-light">
+            <Link href={routes.login} className="text-link-target font-semibold text-text-primary underline underline-offset-4">
               Sign in →
             </Link>
           </>
         ) : (
           <>
             Don&apos;t have an account?{" "}
-            <Link href={routes.signup} className="text-accent hover:text-accent-light">
+            <Link href={routes.signup} className="text-link-target font-semibold text-text-primary underline underline-offset-4">
               Sign up →
             </Link>
           </>

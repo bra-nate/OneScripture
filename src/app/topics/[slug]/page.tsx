@@ -6,6 +6,10 @@ import { TopicPassageList } from "@/app/topics/[slug]/(components)/TopicPassageL
 import { TopicPlaybackPreview } from "@/app/topics/[slug]/(components)/TopicPlaybackPreview";
 import { TopicCatalogueUnavailable } from "@/app/topics/(components)/TopicCatalogueUnavailable";
 import { routes } from "@/config/routes";
+import {
+  getScriptureErrorPresentation,
+  type ScriptureErrorPresentation,
+} from "@/lib/scripture/errors";
 import { getPublishedTopic } from "@/lib/topics/catalogue";
 import { buildTopicSelectionReferences } from "@/lib/topics/selections";
 import { type ScriptureTopic } from "@/lib/topics/types";
@@ -20,13 +24,13 @@ export async function generateMetadata({
   const { slug } = await params;
   try {
     const topic = await getPublishedTopic(slug);
-    if (!topic) return { title: "Topical Scriptures · OneScripture" };
+    if (!topic) return { title: "Topical Scriptures" };
     return {
-      title: `${topic.title} · Topical Scriptures · OneScripture`,
+      title: `${topic.title} · Topical Scriptures`,
       description: topic.description,
     };
   } catch {
-    return { title: "Topical Scriptures · OneScripture" };
+    return { title: "Topical Scriptures" };
   }
 }
 
@@ -35,37 +39,37 @@ export default async function TopicDetailPage({
 }: TopicDetailPageProps) {
   const { slug } = await params;
   let topic: ScriptureTopic | null = null;
-  let isUnavailable = false;
+  let catalogueError: ScriptureErrorPresentation | null = null;
 
   try {
     topic = await getPublishedTopic(slug);
-  } catch {
-    isUnavailable = true;
+  } catch (error) {
+    catalogueError = getScriptureErrorPresentation(error);
   }
 
-  if (!isUnavailable && !topic) notFound();
+  if (!catalogueError && !topic) notFound();
 
   return (
     <section className="mx-auto w-full max-w-6xl flex-1 px-6 py-12 md:py-20">
       <Link
         href={routes.topics.index}
-        className="font-sans text-sm font-semibold text-accent transition-colors hover:text-accent-light focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        className="editorial-link font-sans text-sm font-medium text-text-primary underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
         ← All topics
       </Link>
 
-      {isUnavailable || !topic ? (
+      {catalogueError ? (
         <div className="mt-12">
-          <TopicCatalogueUnavailable />
+          <TopicCatalogueUnavailable {...catalogueError} />
         </div>
-      ) : (
+      ) : topic ? (
         <>
           <header className="grid gap-10 py-14 md:grid-cols-[1fr_23rem] md:items-end md:py-20">
             <div>
-              <p className="font-sans text-sm font-semibold uppercase tracking-hero text-accent">
+              <p className="editorial-kicker">
                 Topical scriptures
               </p>
-              <h1 className="mt-5 font-display text-6xl leading-[0.92] text-text-primary md:text-8xl">
+              <h1 className="page-heading mt-5 text-text-primary">
                 {topic.title}
               </h1>
             </div>
@@ -91,7 +95,7 @@ export default async function TopicDetailPage({
             <TopicPassageList passages={topic.passages} />
           </div>
         </>
-      )}
+      ) : null}
     </section>
   );
 }

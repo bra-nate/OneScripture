@@ -7,6 +7,7 @@ import {
   shouldRefreshSignedUrls,
 } from "@/components/player/playbackSequence";
 import { type AudioSelectionItem, type PlaybackPreferences } from "@/components/player/types";
+import { VerseAudioCache } from "@/components/player/verseAudioCache";
 import { Button, Status } from "@/components/ui";
 
 export interface AudioPlayerProps {
@@ -38,10 +39,10 @@ export function AudioPlayer({
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioCache] = useState(() => new VerseAudioCache());
+  const [, setCacheVersion] = useState(0);
   const currentItem = playbackItems[currentIndex];
-  const nextItem =
-    playbackItems[currentIndex + 1] ??
-    (preferences.mode === "loop" ? playbackItems[0] : null);
+  const currentSource = currentItem ? audioCache.sourceFor(currentItem) : undefined;
 
   async function togglePlayback() {
     const audio = audioRef.current;
@@ -121,6 +122,8 @@ export function AudioPlayer({
   }
 
   async function refreshItemsIfNeeded(isLoopEdge = false) {
+    // Once every verse is held locally, signed URLs are never used again.
+    if (audioCache.hasAll(playbackItems)) return false;
     if (!shouldRefreshSignedUrls(signedAtRef.current, Date.now(), isLoopEdge)) {
       return false;
     }
@@ -168,16 +171,14 @@ export function AudioPlayer({
   }, [preferences.speed, preferences.volume]);
 
   useEffect(() => {
-    if (!nextItem) return;
-    const preload = new Audio();
-    preload.preload = "auto";
-    preload.src = nextItem.url;
-    preload.load();
-    return () => {
-      preload.removeAttribute("src");
-      preload.load();
-    };
-  }, [nextItem]);
+    const controller = new AbortController();
+    void audioCache.download(playbackItems, currentIndex, controller.signal, () =>
+      setCacheVersion((version) => version + 1),
+    );
+    return () => controller.abort();
+  }, [audioCache, playbackItems, currentIndex]);
+
+  useEffect(() => () => audioCache.clear(), [audioCache]);
 
   const currentReference = currentItem?.reference ?? null;
   useEffect(() => {
@@ -200,7 +201,7 @@ export function AudioPlayer({
         onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
         preload="auto"
         ref={audioRef}
-        src={currentItem.url}
+        src={currentSource}
       />
 
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -218,7 +219,7 @@ export function AudioPlayer({
           <Button aria-label="Previous verse" disabled={currentIndex === 0} onClick={() => moveWithFreshUrls(currentIndex - 1)} size="circle" variant="secondary">
             <PreviousIcon />
           </Button>
-          <Button aria-label={isPlaying ? "Pause scripture audio" : "Play scripture audio"} onClick={togglePlayback} size="circle">
+          <Button aria-label={isPlaying ? "Pause scripture audio" : "Play scripture audio"} disabled={!currentSource} onClick={togglePlayback} size="circle">
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </Button>
           <Button aria-label="Next verse" disabled={currentIndex === playbackItems.length - 1} onClick={() => moveWithFreshUrls(currentIndex + 1)} size="circle" variant="secondary">

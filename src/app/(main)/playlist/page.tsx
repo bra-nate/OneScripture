@@ -1,18 +1,28 @@
 import { PlaylistCreateForm } from "@/app/(main)/playlist/(components)/PlaylistCreateForm";
-import { ButtonLink, Surface } from "@/components/ui";
+import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
+import { ButtonLink, Status, Surface } from "@/components/ui";
 import { routes } from "@/config/routes";
 import { getOwnedPlaylistSummaries } from "@/lib/playlists/catalogue";
+import { getPlaylistErrorPresentation, type PlaylistErrorPresentation } from "@/lib/playlists/errors";
+import { type PlaylistSummary } from "@/lib/playlists/types";
 
 export default async function PlaylistPage() {
-  const playlists = await getOwnedPlaylistSummaries();
+  let playlists: PlaylistSummary[] = [];
+  let playlistError: PlaylistErrorPresentation | null = null;
+
+  try {
+    playlists = await getOwnedPlaylistSummaries();
+  } catch (error) {
+    playlistError = getPlaylistErrorPresentation(error);
+  }
 
   return (
-    <section className="mx-auto w-full max-w-5xl flex-1 px-6 py-12">
+    <section className="mx-auto w-full max-w-5xl flex-1 px-6 py-16 md:py-24">
       <header className="max-w-2xl">
-        <p className="font-sans text-sm uppercase tracking-eyebrow text-accent">
+        <p className="editorial-kicker">
           Your listening library
         </p>
-        <h1 className="mt-3 font-display text-5xl text-text-primary">Playlists</h1>
+        <h1 className="page-heading mt-5 text-text-primary">Playlists.</h1>
         <p className="mt-4 font-sans leading-7 text-text-muted">
           Create a collection, then add individual verses from any book or chapter.
         </p>
@@ -27,7 +37,12 @@ export default async function PlaylistPage() {
 
       <div className="mt-10">
         <h2 className="font-display text-3xl text-text-primary">Saved playlists</h2>
-        {playlists.length === 0 ? (
+        {playlistError ? (
+          <Status className="mt-5" label={playlistError.label} tone="information">
+            <p>{playlistError.message}</p>
+            <RetryCurrentPageButton />
+          </Status>
+        ) : playlists.length === 0 ? (
           <Surface className="mt-5 p-6">
             <p className="font-sans text-text-muted">
               No playlists yet. Create one above, then browse Scripture to add verses.

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { type PassageRef } from "@/lib/bible/reference";
-import { ScriptureError } from "@/lib/scripture/errors";
+import { ScriptureError, toScriptureServiceError } from "@/lib/scripture/errors";
 import { expectedVerseCount, validatePassageReference } from "@/lib/scripture/passages";
 import { type CanonicalPassage, type ScriptureTranslation, type ScriptureVerse } from "@/lib/scripture/types";
 import { createClient } from "@/lib/supabase/server";
@@ -34,7 +34,12 @@ export async function getCanonicalPassage(
 ): Promise<CanonicalPassage> {
   validatePassageReference(reference);
 
-  const supabase = await createClient();
+  const supabase = await createClient().catch((error: unknown) => {
+    throw toScriptureServiceError(
+      error,
+      "The scripture catalogue is temporarily unavailable.",
+    );
+  });
   const { data: translations, error: translationError } = await supabase
     .from("scripture_translations")
     .select(
@@ -46,8 +51,8 @@ export async function getCanonicalPassage(
     .returns<TranslationRow[]>();
 
   if (translationError) {
-    throw new ScriptureError(
-      "catalogue_unavailable",
+    throw toScriptureServiceError(
+      translationError,
       "The scripture catalogue is not available yet.",
     );
   }
@@ -80,8 +85,8 @@ export async function getCanonicalPassage(
     .returns<VerseRow[]>();
 
   if (versesError) {
-    throw new ScriptureError(
-      "catalogue_unavailable",
+    throw toScriptureServiceError(
+      versesError,
       "The scripture passage could not be loaded.",
     );
   }
