@@ -39,7 +39,7 @@ export function ScriptureAudioPlayer({
     const isVoiceChange =
       Boolean(changes.voiceId) && changes.voiceId !== preferences.voiceId;
     updatePreferences(changes);
-    // A different voice is a different set of assets — re-prepare rather than
+    // A different voice is a different set of assets. Re-prepare rather than
     // silently dropping the user back to an idle player.
     if (isVoiceChange && state.status !== "idle" && changes.voiceId) {
       void prepare(changes.voiceId);
@@ -73,7 +73,7 @@ export function ScriptureAudioPlayer({
         <Status label="Narrating this selection" tone="information">
           <p>
             {state.ready} of {state.total} verses ready. Playback starts on its
-            own — the first listen for a passage has to be generated once, then
+            own. The first listen for a passage has to be generated once, then
             it is reused.
           </p>
           <progress

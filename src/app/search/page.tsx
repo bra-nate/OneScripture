@@ -33,7 +33,7 @@ export default async function SearchPage({
         {!query ? (
           <SearchEmptyState
             title="Start with a passage reference"
-            body="Enter a book and chapter, optionally with a verse or range — John 3, John 3:16, or John 3:16-18. Word search across the text is not available yet."
+            body="Enter a book and chapter, optionally with a verse or range: John 3, John 3:16, or John 3:16-18. Word search across the text is not available yet."
           />
         ) : parsed ? (
           <Link
@@ -55,7 +55,7 @@ export default async function SearchPage({
         ) : (
           <SearchEmptyState
             title="That isn't a passage reference"
-            body="This looks up references, not words. Try a book and chapter such as John 3:16, Psalms 23, or Romans 8:28 — or browse by book."
+            body="This looks up references, not words. Try a book and chapter such as John 3:16, Psalms 23, or Romans 8:28, or browse by book."
           />
         )}
       </div>

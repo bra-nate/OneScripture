@@ -20,7 +20,7 @@ export async function signUp(
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({ email, password });
   if (error) return { error: error.message };
-  // Email confirmation is ON — no session is created yet.
+  // Email confirmation is ON, so no session is created yet.
   return { checkEmail: true };
 }
 

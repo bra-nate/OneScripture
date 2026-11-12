@@ -37,7 +37,7 @@ export default async function TopicsPage() {
           </h1>
         </div>
         <p className="font-sans text-lg leading-8 text-text-muted">
-          Each collection is reviewed, ordered, and built for focused listening—one passage or the whole sequence.
+          Each collection is reviewed, ordered, and built for focused listening, one passage or the whole sequence.
         </p>
       </header>
 

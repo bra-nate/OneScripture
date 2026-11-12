@@ -116,7 +116,7 @@ export function useAudioSelection(
         status: "error",
         selectionId: state.selectionId,
         message:
-          "Preparing this selection is taking longer than expected. The narration worker may be busy — retry in a moment.",
+          "Preparing this selection is taking longer than expected. The narration worker may be busy. Retry in a moment.",
       });
       return;
     }

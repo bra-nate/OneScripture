@@ -27,7 +27,7 @@ export function PassageSearchForm({
         <Field.Input
           defaultValue={defaultQuery}
           name="q"
-          placeholder="Book chapter:verse — e.g. John 3:16"
+          placeholder="Book chapter:verse, e.g. John 3:16"
           type="search"
         />
       </Field>
@@ -42,7 +42,7 @@ export function PassageSearchForm({
       >
         {TRANSLATIONS.map((option) => (
           <option key={option.id} value={option.id}>
-            {option.id} — {option.label}
+            {option.id}: {option.label}
           </option>
         ))}
       </select>

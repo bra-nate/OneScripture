@@ -16,7 +16,7 @@ export default function Home() {
           </h1>
           <p className="mt-8 max-w-xl font-sans text-lg leading-8 text-text-muted md:text-xl">
             Read the World English Bible and hear any verse, range, or chapter
-            narrated aloud — pick what you want, play it once or on repeat.
+            narrated aloud. Pick what you want, then play it once or on repeat.
           </p>
         </div>
         <div className="relative z-10 rounded-surface bg-surface p-5 md:max-w-4xl md:p-7">

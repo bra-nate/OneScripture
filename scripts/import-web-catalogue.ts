@@ -30,7 +30,7 @@ const TRANSLATION_SOURCES: Readonly<Record<TranslationSource["code"], Translatio
     archiveEntry: "engwebp_vpl.txt",
     archiveName: "engwebp_vpl.zip",
     archiveSha256: "f08d13b4f0701108f7b9f95d57c201649f37c36359f707c8cf1876538a84d750",
-    attribution: "World English Bible — Public Domain; source: eBible.org",
+    attribution: "World English Bible (Public Domain; source: eBible.org)",
     code: "WEB",
     expectedEmptyVerseCount: 5,
     expectedVerseCount: 31_103,
@@ -45,7 +45,7 @@ const TRANSLATION_SOURCES: Readonly<Record<TranslationSource["code"], Translatio
     archiveEntry: "eng-kjv2006_vpl.txt",
     archiveName: "eng-kjv2006_vpl.zip",
     archiveSha256: "ee4cae32cddded36d9dfcb524c70c03dcf930cf04924ca34c9b805bac39210d4",
-    attribution: "King James Version — Public Domain outside the United Kingdom; source: eBible.org",
+    attribution: "King James Version (Public Domain outside the United Kingdom; source: eBible.org)",
     code: "KJV",
     expectedEmptyVerseCount: 0,
     expectedVerseCount: 31_102,
@@ -60,7 +60,7 @@ const TRANSLATION_SOURCES: Readonly<Record<TranslationSource["code"], Translatio
     archiveEntry: "eng-asv_vpl.txt",
     archiveName: "eng-asv_vpl.zip",
     archiveSha256: "6c41b8020cba9cf7041689f2356c55859e28023405537388be08bad93df2b050",
-    attribution: "American Standard Version — Public Domain; source: eBible.org",
+    attribution: "American Standard Version (Public Domain; source: eBible.org)",
     code: "ASV",
     expectedEmptyVerseCount: 16,
     expectedVerseCount: 31_102,
@@ -256,7 +256,7 @@ async function main(): Promise<void> {
   const first = verses[0];
   const last = verses.at(-1);
 
-  console.log(`Translation: ${source.code} — ${source.name}`);
+  console.log(`Translation: ${source.code}, ${source.name}`);
   console.log(`Source SHA-256: ${source.archiveSha256}`);
   console.log(`Validated books: ${new Set(verses.map((verse) => verse.book_id)).size}`);
   console.log(`Validated verses: ${verses.length}`);

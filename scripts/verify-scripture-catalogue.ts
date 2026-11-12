@@ -183,7 +183,7 @@ function createPassageResolver(
         languageCode: "eng",
         sourceName: "eBible.org",
         sourceVersion: "2020 stable text edition",
-        attribution: "World English Bible — Public Domain; source: eBible.org",
+        attribution: "World English Bible (Public Domain; source: eBible.org)",
         canGenerateAudio: true,
         canStreamAudio: true,
       },
