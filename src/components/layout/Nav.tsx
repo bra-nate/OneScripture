@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/(auth)/actions";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { Button } from "@/components/ui";
-import { APP_CONFIG } from "@/config/app";
 import { routes } from "@/config/routes";
 
 export async function Nav() {
@@ -15,9 +15,9 @@ export async function Nav() {
     <header className="app-chrome relative z-20 mx-3 mt-3 flex flex-col gap-4 rounded-[2rem] bg-surface px-5 py-4 sm:mx-6 sm:mt-5 sm:flex-row sm:items-center sm:justify-between sm:rounded-control lg:mx-auto lg:w-[calc(100%-3rem)] lg:max-w-6xl">
       <Link
         href={routes.home}
-        className="text-link-target w-fit font-display text-xl font-medium tracking-[-0.04em] text-text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+        className="text-link-target w-fit focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
       >
-        {APP_CONFIG.NAME}
+        <Wordmark className="h-auto w-32 sm:w-36" />
       </Link>
       <nav className="flex w-full min-w-0 flex-wrap items-center gap-x-5 gap-y-2 font-sans text-sm font-medium text-text-muted sm:w-auto sm:gap-6">
         <Link href={routes.browse} className="text-link-target transition-colors hover:text-accent">

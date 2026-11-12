@@ -13,6 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  applicationName: APP_CONFIG.NAME,
   title: {
     default: APP_CONFIG.NAME,
     template: `%s · ${APP_CONFIG.NAME}`,
