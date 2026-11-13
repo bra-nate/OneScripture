@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import {
   Button,
   Checkbox,
   Field,
+  PasswordField,
   Range,
   Select,
   Status,
@@ -56,6 +57,28 @@ describe("design-system primitives", () => {
     expect(screen.getByLabelText("Playback volume").getAttribute("type")).toBe(
       "range",
     );
+  });
+
+  it("reveals and hides passwords without submitting the form", () => {
+    render(
+      <form>
+        <PasswordField
+          isLabelHidden
+          label="Password"
+          name="password"
+        />
+      </form>,
+    );
+
+    const password = screen.getByLabelText<HTMLInputElement>("Password");
+    const reveal = screen.getByRole("button", { name: "Show password" });
+
+    expect(password.type).toBe("password");
+    expect(reveal.getAttribute("type")).toBe("button");
+
+    fireEvent.click(reveal);
+    expect(password.type).toBe("text");
+    expect(screen.getByRole("button", { name: "Hide password" })).toBeTruthy();
   });
 
   it("announces labeled statuses without relying on color", () => {

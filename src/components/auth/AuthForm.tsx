@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { signIn, signUp } from "@/app/(auth)/actions";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
-import { Button, Field, Status } from "@/components/ui";
+import { Button, Field, PasswordField, Status } from "@/components/ui";
 import { routes } from "@/config/routes";
 
 export interface AuthFormProps {
@@ -55,15 +55,14 @@ export function AuthForm({
           type="email"
         />
       </Field>
-      <Field isLabelHidden label="Password" name="password">
-        <Field.Input
-          autoComplete={mode === "signup" ? "new-password" : "current-password"}
-          name="password"
-          placeholder="Password"
-          required
-          type="password"
-        />
-      </Field>
+      <PasswordField
+        autoComplete={mode === "signup" ? "new-password" : "current-password"}
+        isLabelHidden
+        label="Password"
+        name="password"
+        placeholder="Password"
+        required
+      />
       {error && (
         <Status aria-live="polite" label="Unable to continue" tone="danger">
           {error}

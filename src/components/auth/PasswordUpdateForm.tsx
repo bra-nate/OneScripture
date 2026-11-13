@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 
 import { updatePassword } from "@/app/(auth)/actions";
-import { Button, Field, Status } from "@/components/ui";
+import { Button, PasswordField, Status } from "@/components/ui";
 import { routes } from "@/config/routes";
 
 export function PasswordUpdateForm() {
@@ -21,30 +21,24 @@ export function PasswordUpdateForm() {
 
   return (
     <form action={handleSubmit} className="flex flex-col gap-4">
-      <Field isLabelHidden label="New password" name="password">
-        <Field.Input
-          autoComplete="new-password"
-          minLength={6}
-          name="password"
-          placeholder="New password"
-          required
-          type="password"
-        />
-      </Field>
-      <Field
+      <PasswordField
+        autoComplete="new-password"
+        isLabelHidden
+        label="New password"
+        minLength={6}
+        name="password"
+        placeholder="New password"
+        required
+      />
+      <PasswordField
+        autoComplete="new-password"
         isLabelHidden
         label="Confirm new password"
+        minLength={6}
         name="passwordConfirmation"
-      >
-        <Field.Input
-          autoComplete="new-password"
-          minLength={6}
-          name="passwordConfirmation"
-          placeholder="Confirm new password"
-          required
-          type="password"
-        />
-      </Field>
+        placeholder="Confirm new password"
+        required
+      />
       {error && (
         <Status aria-live="polite" label="Unable to update password" tone="danger">
           {error}
