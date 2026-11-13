@@ -258,6 +258,52 @@ body {
   align-items: center;
 }
 
+.range-control {
+  cursor: pointer;
+  appearance: none;
+  background: transparent;
+}
+
+.range-control::-webkit-slider-runnable-track {
+  height: 0.375rem;
+  border: 1px solid var(--page-border);
+  border-radius: 9999px;
+  background: var(--page-surface-strong);
+}
+
+.range-control::-webkit-slider-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: -0.5rem;
+  appearance: none;
+  border: 2px solid var(--page-background);
+  border-radius: 9999px;
+  background: var(--page-foreground);
+  box-shadow: 0 0 0 1px var(--page-foreground);
+}
+
+.range-control::-moz-range-track {
+  height: 0.375rem;
+  border: 1px solid var(--page-border);
+  border-radius: 9999px;
+  background: var(--page-surface-strong);
+}
+
+.range-control::-moz-range-progress {
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: var(--page-foreground);
+}
+
+.range-control::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--page-background);
+  border-radius: 9999px;
+  background: var(--page-foreground);
+  box-shadow: 0 0 0 1px var(--page-foreground);
+}
+
 .hero-paper-art {
   position: relative;
   min-height: clamp(14rem, 34vw, 26rem);

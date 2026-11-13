@@ -1,4 +1,4 @@
-import { Button, Field } from "@/components/ui";
+import { Button, Field, Select } from "@/components/ui";
 import { routes } from "@/config/routes";
 import { getTranslation, TRANSLATIONS } from "@/lib/bible/translations";
 
@@ -34,8 +34,7 @@ export function PassageSearchForm({
       <label className="sr-only" htmlFor="passage-translation">
         Bible translation
       </label>
-      <select
-        className="min-h-12 rounded-control border border-border bg-surface px-4 font-sans text-sm text-text-primary"
+      <Select
         defaultValue={translation.id}
         id="passage-translation"
         name="translation"
@@ -45,7 +44,7 @@ export function PassageSearchForm({
             {option.id}: {option.label}
           </option>
         ))}
-      </select>
+      </Select>
       <Button size="large" type="submit">
         Go
       </Button>

@@ -1,5 +1,5 @@
 import { VersePlaylistAction } from "@/app/passage/[bookId]/[chapter]/(components)/VersePlaylistAction";
-import { Button } from "@/components/ui";
+import { Button, Checkbox } from "@/components/ui";
 import { classNames } from "@/components/ui/classNames";
 import { getBook } from "@/lib/bible/reference";
 import { type PlaylistSummary } from "@/lib/playlists/types";
@@ -45,13 +45,12 @@ export function VerseList({
               isActive && "bg-highlight",
             )}
           >
-            <input
+            <Checkbox
               aria-label={`Select ${reference}`}
               checked={isSelected}
-              className="mt-1.5 size-4 accent-accent"
+              className="mt-0.5"
               onChange={() => undefined}
               onClick={(event) => onToggleVerse(verse.verse, event.shiftKey)}
-              type="checkbox"
             />
             <span
               className={classNames(

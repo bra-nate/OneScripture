@@ -6,7 +6,7 @@ import { ChapterReader } from "@/app/passage/[bookId]/[chapter]/(components)/Cha
 import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
 import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
-import { Status } from "@/components/ui";
+import { Button, Select, Status } from "@/components/ui";
 import { APP_CONFIG } from "@/config/app";
 import { formatDisplayRef, getBook, serializePassageRef, type PassageRef } from "@/lib/bible/reference";
 import { getTranslation, TRANSLATIONS } from "@/lib/bible/translations";
@@ -142,8 +142,8 @@ export default async function PassagePage({
               <label className="mb-2 block font-sans text-xs font-semibold uppercase tracking-[0.12em] text-text-muted" htmlFor="translation">
                 Translation
               </label>
-              <select
-                className="min-h-11 rounded-control border border-border bg-surface px-3 font-sans text-sm text-text-primary"
+              <Select
+                controlSize="small"
                 defaultValue={translation.id}
                 id="translation"
                 name="translation"
@@ -153,7 +153,7 @@ export default async function PassagePage({
                     {option.id}: {option.label}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             {reference.verseStart !== null && (
               <input name="verseStart" type="hidden" value={reference.verseStart} />
@@ -161,9 +161,9 @@ export default async function PassagePage({
             {reference.verseEnd !== null && (
               <input name="verseEnd" type="hidden" value={reference.verseEnd} />
             )}
-            <button className="min-h-11 rounded-control bg-text-primary px-4 font-sans text-sm font-semibold text-background" type="submit">
+            <Button size="small" type="submit" variant="selected">
               Change
-            </button>
+            </Button>
           </form>
         </header>
 

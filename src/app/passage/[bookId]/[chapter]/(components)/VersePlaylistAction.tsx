@@ -3,7 +3,7 @@
 import { useActionState, useId } from "react";
 
 import { addVerseToPlaylist } from "@/app/(main)/playlist/actions";
-import { Button, ButtonLink } from "@/components/ui";
+import { Button, ButtonLink, Select } from "@/components/ui";
 import { routes } from "@/config/routes";
 import { INITIAL_PLAYLIST_ACTION_STATE, type PlaylistSummary } from "@/lib/playlists/types";
 
@@ -48,8 +48,9 @@ export function VersePlaylistAction({
       <label className="sr-only" htmlFor={selectId}>
         Playlist for {reference}
       </label>
-      <select
-        className="min-h-11 max-w-44 rounded-control border border-border bg-surface px-3 font-sans text-xs text-text-primary"
+      <Select
+        className="max-w-44"
+        controlSize="small"
         defaultValue={playlists[0].id}
         id={selectId}
         name="playlistId"
@@ -59,7 +60,7 @@ export function VersePlaylistAction({
             {playlist.name}
           </option>
         ))}
-      </select>
+      </Select>
       <Button
         aria-label={`Add ${reference} to playlist`}
         isPending={isPending}

@@ -8,7 +8,7 @@ import {
 } from "@/components/player/playbackSequence";
 import { type AudioSelectionItem, type PlaybackPreferences } from "@/components/player/types";
 import { VerseAudioCache } from "@/components/player/verseAudioCache";
-import { Button, Status } from "@/components/ui";
+import { Button, Range, Status } from "@/components/ui";
 
 export interface AudioPlayerProps {
   items: AudioSelectionItem[];
@@ -228,7 +228,7 @@ export function AudioPlayer({
         </div>
       </div>
 
-      <input aria-label="Audio progress" aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`} className="min-h-11 w-full accent-accent disabled:opacity-50" disabled={!duration} max={duration || 0} min="0" onChange={(event) => seek(event.target.value)} step="1" type="range" value={Math.min(currentTime, duration || currentTime)} />
+      <Range aria-label="Audio progress" aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`} disabled={!duration} max={duration || 0} min="0" onChange={(event) => seek(event.target.value)} step="1" value={Math.min(currentTime, duration || currentTime)} />
 
       <div className="flex flex-wrap gap-2">
         <Button aria-pressed={preferences.mode === "once"} onClick={() => onPreferencesChange({ mode: "once" })} size="small" variant={preferences.mode === "once" ? "selected" : "secondary"}>

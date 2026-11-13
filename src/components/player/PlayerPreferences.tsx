@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { Button, Range } from "@/components/ui";
 import {
   PLAYBACK_SPEEDS,
   type PlaybackPreferences,
@@ -60,15 +60,14 @@ export function PlayerPreferences({
 
       <label className="font-sans text-xs font-semibold uppercase tracking-label text-text-muted">
         Volume {Math.round(preferences.volume * 100)}%
-        <input
+        <Range
           aria-label="Playback volume"
           aria-valuetext={`${Math.round(preferences.volume * 100)} percent`}
-          className="mt-2 min-h-11 w-full accent-accent"
+          className="mt-2"
           max="1"
           min="0"
           onChange={(event) => onChange({ volume: Number(event.target.value) })}
           step="0.05"
-          type="range"
           value={preferences.volume}
         />
       </label>

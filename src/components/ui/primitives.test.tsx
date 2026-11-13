@@ -1,7 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { Button, Field, Status, Surface } from "@/components/ui";
+import {
+  Button,
+  Checkbox,
+  Field,
+  Range,
+  Select,
+  Status,
+  Surface,
+} from "@/components/ui";
 
 describe("design-system primitives", () => {
   it("defaults buttons to a non-submitting type", () => {
@@ -27,6 +35,27 @@ describe("design-system primitives", () => {
     );
 
     expect(screen.getByLabelText("Passage").getAttribute("id")).toBe("passage");
+  });
+
+  it("preserves native form semantics in styled controls", () => {
+    render(
+      <>
+        <label htmlFor="translation">Translation</label>
+        <Select defaultValue="WEB" id="translation">
+          <option value="WEB">World English Bible</option>
+        </Select>
+        <Checkbox aria-label="Select John 3:16" defaultChecked />
+        <Range aria-label="Playback volume" defaultValue="0.5" max="1" step="0.1" />
+      </>,
+    );
+
+    expect(screen.getByLabelText("Translation").tagName).toBe("SELECT");
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Select John 3:16").checked,
+    ).toBe(true);
+    expect(screen.getByLabelText("Playback volume").getAttribute("type")).toBe(
+      "range",
+    );
   });
 
   it("announces labeled statuses without relying on color", () => {
