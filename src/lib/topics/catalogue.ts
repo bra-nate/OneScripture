@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 
+import { APP_CONFIG } from "@/config/app";
 import { formatPassageRef, type PassageRef } from "@/lib/bible/reference";
 import { toScriptureServiceError } from "@/lib/scripture/errors";
 import { createClient } from "@/lib/supabase/server";
@@ -107,7 +108,7 @@ export const getPublishedTopic = cache(
     const passages = (passageRows ?? []).map(mapTopicPassage);
     return {
       ...mapTopicSummary(topic, passages.length),
-      translationCode: "WEB",
+      translationCode: APP_CONFIG.DEFAULT_TRANSLATION,
       passages,
     };
   },

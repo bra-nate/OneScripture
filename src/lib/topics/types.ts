@@ -1,4 +1,5 @@
 import { type PassageRef } from "@/lib/bible/reference";
+import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
 
 export type TopicStatus = "draft" | "review" | "published" | "archived";
 
@@ -29,6 +30,6 @@ export interface TopicPassage {
 }
 
 export interface ScriptureTopic extends TopicSummary {
-  translationCode: string;
+  translationCode: SelectionTranslationId;
   passages: TopicPassage[];
 }

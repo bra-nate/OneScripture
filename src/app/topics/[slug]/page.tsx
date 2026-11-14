@@ -81,6 +81,7 @@ export default async function TopicDetailPage({
           <TopicPlaybackPreview
             references={buildTopicSelectionReferences(topic)}
             title={topic.title}
+            translationCode={topic.translationCode}
           />
 
           <div className="mt-16">

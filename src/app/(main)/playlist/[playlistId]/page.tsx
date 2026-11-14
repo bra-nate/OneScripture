@@ -4,6 +4,7 @@ import { PlaylistItemRemoveForm } from "@/app/(main)/playlist/(components)/Playl
 import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
 import { ScriptureAudioPlayer } from "@/components/player";
 import { ButtonLink, Status, Surface } from "@/components/ui";
+import { APP_CONFIG } from "@/config/app";
 import { routes } from "@/config/routes";
 import { serializePassageRef } from "@/lib/bible/reference";
 import { type SelectionTranslationId } from "@/lib/audio/selection-contract";
@@ -72,7 +73,7 @@ export default async function PlaylistDetailPage({
         <ScriptureAudioPlayer
           references={references}
           title={playlist.name}
-          translationCode={(playlist.items[0]?.translationId ?? "WEB") as SelectionTranslationId}
+          translationCode={(playlist.items[0]?.translationId ?? APP_CONFIG.DEFAULT_TRANSLATION) as SelectionTranslationId}
         />
       </div>
 

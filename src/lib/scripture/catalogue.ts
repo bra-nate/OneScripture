@@ -1,5 +1,6 @@
 import "server-only";
 
+import { APP_CONFIG } from "@/config/app";
 import { type PassageRef } from "@/lib/bible/reference";
 import { ScriptureError, toScriptureServiceError } from "@/lib/scripture/errors";
 import { expectedVerseCount, validatePassageReference } from "@/lib/scripture/passages";
@@ -30,7 +31,7 @@ interface VerseRow {
 
 export async function getCanonicalPassage(
   reference: PassageRef,
-  translationCode = "WEB",
+  translationCode: string = APP_CONFIG.DEFAULT_TRANSLATION,
 ): Promise<CanonicalPassage> {
   validatePassageReference(reference);
 

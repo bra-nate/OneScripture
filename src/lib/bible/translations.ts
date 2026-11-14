@@ -28,8 +28,12 @@ export const TRANSLATIONS: TranslationOption[] = [
 
 export function getTranslation(id?: string | null): TranslationOption {
   const requested = id ?? APP_CONFIG.DEFAULT_TRANSLATION;
+  const defaultTranslation =
+    TRANSLATIONS.find(
+      (translation) => translation.id === APP_CONFIG.DEFAULT_TRANSLATION,
+    ) ?? TRANSLATIONS[0];
   return (
     TRANSLATIONS.find((translation) => translation.id === requested) ??
-    TRANSLATIONS[0]
+    defaultTranslation
   );
 }
