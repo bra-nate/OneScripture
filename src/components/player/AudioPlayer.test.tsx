@@ -107,7 +107,7 @@ describe("AudioPlayer", () => {
     expect(audio.getAttribute("src")).toMatch(/^blob:local\//);
   });
 
-  it("restarts a single-verse selection in repeat mode", async () => {
+  it("uses native looping for a single-verse selection", () => {
     const item = ITEMS[0];
     const view = render(
       <AudioPlayer
@@ -122,11 +122,11 @@ describe("AudioPlayer", () => {
     Object.defineProperty(audio, "play", { value: play });
     Object.defineProperty(audio, "currentTime", { configurable: true, value: 9, writable: true });
 
+    expect(audio.loop).toBe(true);
     fireEvent.ended(audio);
 
-    await waitFor(() => expect(play).toHaveBeenCalledOnce());
-    expect(audio.currentTime).toBe(0);
-    expect(screen.getByLabelText("Pause scripture audio")).toBeTruthy();
+    expect(play).not.toHaveBeenCalled();
+    expect(audio.currentTime).toBe(9);
   });
 
   it("exposes descriptive range values to assistive technology", () => {

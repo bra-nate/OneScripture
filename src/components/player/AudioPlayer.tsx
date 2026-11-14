@@ -43,6 +43,7 @@ export function AudioPlayer({
   const [, setCacheVersion] = useState(0);
   const currentItem = playbackItems[currentIndex];
   const currentSource = currentItem ? audioCache.sourceFor(currentItem) : undefined;
+  const usesNativeLoop = preferences.mode === "loop" && playbackItems.length === 1;
 
   async function togglePlayback() {
     const audio = audioRef.current;
@@ -89,6 +90,7 @@ export function AudioPlayer({
   }
 
   async function handleEnded() {
+    if (usesNativeLoop) return;
     const nextIndex = getEndedPlaybackIndex(
       currentIndex,
       playbackItems.length,
@@ -188,6 +190,7 @@ export function AudioPlayer({
   return (
     <div className="grid gap-5">
       <audio
+        loop={usesNativeLoop}
         onCanPlay={handleCanPlay}
         onEnded={handleEnded}
         onError={() => setError("This verse audio is temporarily unavailable.")}
