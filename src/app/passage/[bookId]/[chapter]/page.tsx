@@ -3,6 +3,7 @@ import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ChapterReader } from "@/app/passage/[bookId]/[chapter]/(components)/ChapterReader";
+import { ChapterNavigation } from "@/app/passage/[bookId]/[chapter]/(components)/ChapterNavigation";
 import { parsePassageQueryNumber } from "@/app/passage/[bookId]/[chapter]/(utils)/parsePassageQueryNumber";
 import { AdSlot } from "@/components/ad/AdSlot";
 import { RetryCurrentPageButton } from "@/components/RetryCurrentPageButton";
@@ -166,6 +167,13 @@ export default async function PassagePage({
             </Button>
           </form>
         </header>
+
+        <ChapterNavigation
+          bookId={book.id}
+          chapter={chapter}
+          chapterCount={book.chapters}
+          translationId={translation.id}
+        />
 
         {catalogueError ? (
           <div className="mt-8">
