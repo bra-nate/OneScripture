@@ -18,6 +18,7 @@
     "scripture:verify:kjv": "tsx --env-file-if-exists=.env.local scripts/verify-scripture-catalogue.ts --translation=KJV",
     "scripture:verify:asv": "tsx --env-file-if-exists=.env.local scripts/verify-scripture-catalogue.ts --translation=ASV",
     "audio:verify-storage": "tsx --env-file-if-exists=.env.local scripts/verify-audio-storage.ts",
+    "release:source": "bash scripts/verify-release-source.sh",
     "release:health": "tsx --env-file-if-exists=.env.local scripts/check-release-health.ts",
     "release:verify-restore": "bash scripts/verify-backup-restore.sh",
     "release:verify-storage": "tsx --env-file-if-exists=.env.local scripts/verify-storage-recovery.ts",
