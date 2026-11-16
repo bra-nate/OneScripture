@@ -24,7 +24,7 @@ export function getButtonClassName({
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    "border border-transparent bg-accent text-text-primary hover:bg-accent-light",
+    "border border-transparent bg-accent text-accent-foreground hover:bg-accent-light",
   secondary:
     "border border-text-primary bg-transparent text-text-primary hover:bg-surface",
   selected:

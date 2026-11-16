@@ -41,6 +41,7 @@
   --page-highlight: #e8f3df;
   --page-accent: var(--color-fresh-grass);
   --page-accent-hover: #6db543;
+  --page-accent-foreground: var(--color-ink);
   --page-decoration: var(--color-sunshine-pop);
   --page-decoration-soft: #f7ebb0;
   --page-field: var(--color-paper);
@@ -72,6 +73,7 @@
   --color-border: var(--page-border);
   --color-accent: var(--page-accent);
   --color-accent-light: var(--page-accent-hover);
+  --color-accent-foreground: var(--page-accent-foreground);
   --color-text-primary: var(--page-foreground);
   --color-text-muted: var(--page-muted);
   --color-focus: var(--page-focus);
@@ -126,6 +128,64 @@
   --page-decoration-soft: #ffd7d0;
 }
 
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --page-background: #151713;
+  --page-foreground: #f5f1e4;
+  --page-muted: #b8bcae;
+  --page-surface: #20231f;
+  --page-surface-strong: #30352e;
+  --page-surface-strong-foreground: #f5f1e4;
+  --page-border: #454a42;
+  --page-focus: #f5f1e4;
+  --page-highlight: #293525;
+  --page-accent: var(--color-fresh-grass);
+  --page-accent-hover: #a6e17f;
+  --page-accent-foreground: var(--color-ink);
+  --page-field: #252824;
+  --page-field-foreground: #f5f1e4;
+
+  --chrome-background: #20231f;
+  --chrome-foreground: #f5f1e4;
+  --chrome-muted: #b8bcae;
+  --chrome-border: #454a42;
+  --chrome-accent: var(--color-fresh-grass);
+
+  --color-success: #77d989;
+  --color-information: #6dcbea;
+  --color-warning: #f4bd68;
+  --color-danger: #ff8b80;
+  --color-active: #9add74;
+  --color-success-surface: #18341d;
+  --color-success-foreground: #b9efc3;
+  --color-information-surface: #17343d;
+  --color-information-foreground: #bceaf8;
+  --color-warning-surface: #3e2d16;
+  --color-warning-foreground: #ffe0aa;
+  --color-danger-surface: #40201d;
+  --color-danger-foreground: #ffc6c0;
+}
+
+html[data-theme="dark"] [data-page-theme="search"],
+html[data-theme="dark"] [data-page-theme="playlists"] {
+  --page-decoration-soft: #17344a;
+}
+
+html[data-theme="dark"] [data-page-theme="browse-books"],
+html[data-theme="dark"] [data-page-theme="browse-chapters"],
+html[data-theme="dark"] [data-page-theme="passage"] {
+  --page-decoration-soft: #293b22;
+}
+
+html[data-theme="dark"] [data-page-theme="topics"],
+html[data-theme="dark"] [data-page-theme="signup"] {
+  --page-decoration-soft: #4a2421;
+}
+
+html[data-theme="dark"] [data-page-theme="login"] {
+  --page-decoration-soft: #413b18;
+}
+
 @layer base {
   * {
     border-color: var(--page-border);
@@ -138,7 +198,7 @@ html {
 
 body {
   min-height: 100%;
-  background: var(--color-cream-paper);
+  background: var(--page-background);
   color: var(--page-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
@@ -200,6 +260,14 @@ body {
   color: var(--chrome-foreground);
 }
 
+.wordmark {
+  transition: filter 200ms ease-out;
+}
+
+html[data-theme="dark"] .wordmark {
+  filter: brightness(0) invert(1);
+}
+
 .surface-strong-context {
   --page-foreground: var(--page-surface-strong-foreground);
   --page-muted: color-mix(in oklch, var(--page-surface-strong-foreground) 82%, transparent);
@@ -208,7 +276,7 @@ body {
 }
 
 .editorial-kicker {
-  color: var(--color-ink);
+  color: var(--page-foreground);
   font-family: var(--font-inter), sans-serif;
   font-size: 0.75rem;
   font-weight: 500;

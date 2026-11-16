@@ -51,7 +51,7 @@ function FieldInput({ className, id, name, ...props }: FieldInputProps) {
   return (
     <input
       className={classNames(
-        "min-h-14 min-w-0 w-full rounded-control border border-border bg-field px-5 font-sans text-base text-field-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[var(--color-muted-dark)] focus:border-focus focus-visible:ring-2 focus-visible:ring-focus/20 disabled:cursor-not-allowed disabled:opacity-55",
+        "min-h-14 min-w-0 w-full rounded-control border border-border bg-field px-5 font-sans text-base text-field-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-text-muted focus:border-focus focus-visible:ring-2 focus-visible:ring-focus/20 disabled:cursor-not-allowed disabled:opacity-55",
         className,
       )}
       id={id ?? name}

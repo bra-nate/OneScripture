@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -22,9 +23,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  // Matches the body ground the page canvas sits on, so mobile browser chrome
-  // does not clash with the full-bleed route themes.
-  themeColor: "#f5f1e4",
+  themeColor: [
+    { color: "#f5f1e4", media: "(prefers-color-scheme: light)" },
+    { color: "#151713", media: "(prefers-color-scheme: dark)" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -32,7 +34,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){var t;try{t=localStorage.getItem("onescripture-theme")}catch(e){}if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#151713":"#f5f1e4")})()`}
+        </Script>
+      </head>
       <body>
         <PageCanvas>
           <a

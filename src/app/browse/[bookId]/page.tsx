@@ -37,7 +37,7 @@ export default async function BrowseBookPage({
             <Link
               key={chapter}
               href={`/passage/${book.id}/${chapter}?translation=${translation.id}`}
-              className="grid aspect-square place-items-center rounded-full border border-border bg-background font-sans text-sm font-medium text-text-primary transition-colors hover:border-text-primary hover:bg-accent"
+              className="grid aspect-square place-items-center rounded-full border border-border bg-background font-sans text-sm font-medium text-text-primary transition-colors hover:border-text-primary hover:bg-accent hover:text-accent-foreground"
             >
               {chapter}
             </Link>

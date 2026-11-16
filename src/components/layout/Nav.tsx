@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/(auth)/actions";
 import { Wordmark } from "@/components/brand/Wordmark";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui";
 import { routes } from "@/config/routes";
 
@@ -19,7 +20,7 @@ export async function Nav() {
       >
         <Wordmark className="h-auto w-32 sm:w-36" />
       </Link>
-      <nav className="flex w-full min-w-0 flex-wrap items-center gap-x-5 gap-y-2 font-sans text-sm font-medium text-text-muted sm:w-auto sm:gap-6">
+      <nav className="flex w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-2 font-sans text-sm font-medium text-text-muted sm:w-auto sm:gap-6">
         <Link href={routes.browse} className="text-link-target transition-colors hover:text-accent">
           Browse
         </Link>
@@ -50,12 +51,13 @@ export async function Nav() {
             </Link>
             <Link
               href={routes.signup}
-              className="inline-flex min-h-11 items-center rounded-control bg-accent px-5 text-text-primary transition-colors hover:bg-accent-light"
+              className="inline-flex min-h-11 items-center rounded-control bg-accent px-5 text-accent-foreground transition-colors hover:bg-accent-light"
             >
               Sign Up
             </Link>
           </>
         )}
+        <ThemeToggle />
       </nav>
     </header>
   );
